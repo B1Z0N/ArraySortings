@@ -1,2 +1,2 @@
 # ArraySortings
-Repository with sorting and benchmarking this sortings
+Repository with sorting methods and benchmark facilities
