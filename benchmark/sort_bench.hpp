@@ -3,6 +3,7 @@
 
 #include <tuple>  // std::tuple
 #include <vector> // std::vector
+#include <chrono> // time measuring
 
 #include "sort_bench_interface.hpp"
 
@@ -23,7 +24,31 @@ GenFunc<AElement>::GenFunc(GenFunc<AElement>::const_genf genf, const AElement &_
 }
 
 template <typename AElement>
-AElement GenFunc<AElement>::operator()()
+inline AElement GenFunc<AElement>::get_min() const
+{
+    return min;
+}
+
+template <typename AElement>
+inline AElement GenFunc<AElement>::get_max() const
+{
+    return max;
+}
+
+template <typename AElement>
+inline void GenFunc<AElement>::set_min(const AElement &_min)
+{
+    min = _min;
+}
+
+template <typename AElement>
+inline void GenFunc<AElement>::set_max(const AElement &_max)
+{
+    max = _max;
+}
+
+template <typename AElement>
+AElement GenFunc<AElement>::generate()
 {
     switch (type)
     {
@@ -35,132 +60,169 @@ AElement GenFunc<AElement>::operator()()
         break;
     }
 }
-
-//////////-SortFunc-//////////////
-
-template <template <typename> typename A, typename AE /*, typename ...PreconditionReturnTypes */>
-SortFunc<A, AE>::SortFunc(SortFunc<A, AE>::sortf _sorting) : sorting{_sorting}
+////////////-SortStats-///////////////////
+ostream &operator<<(ostream &os, const SortStats<AElement>::MinMax &_time)
 {
+    if (_time.done)
+    {
+        os << "time: " << _time.dur;
+    }
+    else
+        os << "Time test was skipped";
+
+    return os;
 }
 
-template <template <typename> typename A, typename AE /*, typename ...PreconditionReturnTypes */>
-void SortFunc<A, AE>::sort()
+template <typename AElement>
+ostream &operator<<(ostream &os, const SortStats<AElement>::CmpAsgn &cmp_asgn)
 {
-    if (arr == nullptr)
-        throw ArrayNotGiven{};
+    if (cmp_asgn.done)
+    {
+        os << "cmp: " << cmp_asgn.comparisons << "; asgn: " << cmp_asgn.assignments;
+    }
+    else
+        os << "Comparison and assignment tests were skipped";
 
-    sorting(*arr);
-}
-
-//////////-ArrayElement-//////////////
-template <typename T>
-uint ArrayElement<T>::comparisons = 0;
-template <typename T>
-uint ArrayElement<T>::assignments = 0;
-
-template <typename T>
-bool ArrayElement<T>::cmp_on = true;
-template <typename T>
-bool ArrayElement<T>::asgn_on = true;
-
-template <typename T>
-ArrayElement<T>::ArrayElement(const T &el)
-    : elem{el}
-{
+    return os;
 }
 
-template <typename T>
-ArrayElement<T>::ArrayElement(T &&el)
-    : elem{std::move(el.elem)}
+ostream &operator<<(ostream &os, const SortStats &stats)
 {
+    if (stats.len != -1)
+    {
+        os << "len: " << stats.len;
+    }
+    else
+    {
+        //-//
+        os << "Array was not initialized, no tests runned";
+        return os;
+    }
+
+    os << ";\n" << stats.cmp_asgn << ";\n" << stats.bounds;
+
+    return os;
 }
 
-template <typename T>
-ArrayElement<T> &ArrayElement<T>::operator=(const ArrayElement<T> &el)
+template <typename AE>
+double dur_to_milliseconds(const SortStats<AE> &stats)
 {
-    if (asgn_on)
-        assignments++;
-    elem = el.elem;
+    std::chrono::duration dur = stats.time.dur;
 
-    return (*this);
-}
-template <typename T>
-ArrayElement<T> &ArrayElement<T>::operator=(const T &el)
-{
-    if (asgn_on)
-        assignments++;
-    elem = el;
+    double ms_duration =
+        std::chrono::duration_cast<std::chrono::milliseconds>(dur).count();
 
-    return (*this);
-}
-template <typename T>
-ArrayElement<T> &ArrayElement<T>::operator=(ArrayElement<T> &&el)
-{
-    if (asgn_on)
-        assignments++;
-    elem = std::move(el.elem);
-
-    return (*this);
-}
-template <typename T>
-ArrayElement<T> &ArrayElement<T>::operator=(T &&el)
-{
-    if (asgn_on)
-        assignments++;
-    elem = std::move(el);
-
-    return (*this);
+    return ms_duration;
 }
 
-template <typename T>
-inline void ArrayElement<T>::reset()
+////////////-SortBench-///////////////////
+
+template <template <typename> typename A, typename AE>
+SortBench<A, AE>::SortBench(SortFunc<A> *_sort, const GenFunc<AE> &_gen)
+    : sorting{_sort}, generating{_gen}
 {
-    comparisons = 0;
-    assignments = 0;
+    stats.min = _gen.get_min();
+    stats.max = _gen.get_max();
 }
 
-template <typename T>
-inline bool operator==(const ArrayElement<T> &a, const ArrayElement<T> &b)
+template <template <typename> typename A, typename AE>
+SortBench<A, AE>::SortBench(SortFunc<A> _sort, SortBench<A, AE>::genf _gen, AE _min, AE _max)
+    : sorting{_sort}, generating{_gen, _min, _max}
 {
-    if (a.cmp_on)
-        a.comparisons++;
-    return a.elem == b.elem;
+    stats.min = _min;
+    stats.max = _max;
 }
-template <typename T>
-inline bool operator!=(const ArrayElement<T> &a, const ArrayElement<T> &b)
+
+template <template <typename> typename A, typename AE>
+SortBench<A, AE>::SortBench(
+    SortFunc<A> _sort, sort_cmp_asgn,
+    SortBench<A, AE>::const_genf _gen,
+    const AE &_min, const AE &_max)
+    : sorting{_sort}, generating{_gen, _min, _max}
 {
-    if (a.cmp_on)
-        a.comparisons++;
-    return a.elem != b.elem;
+    stats.min = _min;
+    stats.max = _max;
 }
-template <typename T>
-inline bool operator>(const ArrayElement<T> &a, const ArrayElement<T> &b)
+
+template <template <typename> typename A, typename AE>
+void SortBench<A, AE>::gen_array(uint len)
 {
-    if (a.cmp_on)
-        a.comparisons++;
-    return a.elem > b.elem;
+    stats.len = len;
+    array = A<AE>(len);
+    for (uint i = 0; i < len; i++)
+    {
+        array[i] = generating();
+    }
 }
-template <typename T>
-inline bool operator<(const ArrayElement<T> &a, const ArrayElement<T> &b)
+
+template <template <typename> typename A, typename AE>
+SortStats<AElement>::CmpAsgn SortBench<A, AE>::cmp_asgn_test()
 {
-    if (a.cmp_on)
-        a.comparisons++;
-    return a.elem < b.elem;
+    A<ArrayElement<AE>> elemarr(stats.len);
+    for (int i = 0; i < stats.len; i++)
+    {
+        elemarr[i] = ArrayElement<AE>(array[i]);
+    }
+
+    sorting.sort(elemarr);
+
+    stats.comparisons = ArrayElement<AE>::get_cmp();
+    stats.assignments = ArrayElement<AE>::get_asgn();
+
+    return SortStats<AE>::CmpAsgn{stats.comparisons, stats.assignments};
 }
-template <typename T>
-inline bool operator>=(const ArrayElement<T> &a, const ArrayElement<T> &b)
+
+template <template <typename> typename A, typename AE>
+std::chrono::duration SortBench<A, AE>::time_test()
 {
-    if (a.cmp_on)
-        a.comparisons++;
-    return a.elem >= b.elem;
+    using _clock = std::chrono::high_resolution_clock;
+
+    std::chrono::time_point<_clock> then = _clock::now();
+    sorting.sort(array);
+    std::chrono::time_point<_clock> now = _clock::now();
+
+    stats.time = now - then;
+
+    return stats.time;
 }
-template <typename T>
-inline bool operator<=(const ArrayElement<T> &a, const ArrayElement<T> &b)
+
+template <template <typename> typename A, typename AE>
+SortStats<AE> SortBench<A, AE>::get_stats() const
 {
-    if (a.cmp_on)
-        a.comparisons++;
-    return a.elem <= b.elem;
+    return stats;
 }
+
+template <template <typename> typename A, typename AE>
+void SortBench<A, AE>::set_min(const AElement &_min)
+{
+    generating.set_min(_min);
+    stats.bounds.min = min;
+}
+
+template <template <typename> typename A, typename AE>
+void SortBench<A, AE>::set_max(const AElement &_max)
+{
+    generating.set_max(_max);
+    stats.bounds.max = max;
+}
+
+template <template <typename> typename A, typename AE>
+SortStats<AElement>::MinMax SortBench<A, AE>::get_min_max() const
+{
+    return stats.bounds;
+}
+
+template <template <typename> typename A, typename AE>
+SortStats<AE> full_test(SortBench<A, AE> &bench)
+{
+    bench.gen_array();
+    bench.cmp_asgn_test();
+    bench.time_test();
+
+    return bench.get_stats();
+
+}
+
 } // namespace SortingBenchmark
 
 #endif

@@ -1,29 +1,33 @@
 #ifndef AOS_LAB2_SORT_BENCH_INTERFACE
+// Make sorting for 2 types
+// Make preconditions
+// Finish SortBench
 
+// what about using?
 #define AOS_LAB2_SORT_BENCH_INTERFACE
+
 #include <tuple>  // std::tuple
 #include <vector> // std::vector
+#include <chrono> // time measuring
+
+//#include "array_element_interface.hpp"
 
 namespace SortingBenchmark
 {
-
-template <template <typename> typename Array, typename ArrayElement>
-using sortf = void (*)(Array<ArrayElement> &); // pointer to sorting function
-
 using uint = unsigned int;
 
-template <typename ArrayElement>
+template <typename AElement>
 class GenFunc
 // class for supporting 2 types of generating functions:
 // with const refs arguments and with ordinary arguments
 // allows calling function not even thinking about what it's type
 {
     // pointer to function, that generates elements in range (min, max)
-    using genf = ArrayElement (*)(ArrayElement min, ArrayElement max);
+    using genf = AElement (*)(AElement min, AElement max);
 
     // pointer to function, that does the same
     // but passing const refs, because of cheapness of this operation
-    using const_genf = ArrayElement (*)(const ArrayElement &, const ArrayElement &);
+    using const_genf = AElement (*)(const AElement &, const AElement &);
 
     bool type; // 0 - first(gf), 1 - second(cgf)
     union {
@@ -31,125 +35,108 @@ class GenFunc
         const_genf cgf;
     };
 
+    AElement min;
+    AElement max;
+
 public:
-    ArrayElement min;
-    ArrayElement max;
+    GenFunc(genf genf, AElement _min, AElement _max);                     // constructor for 1st type
+    GenFunc(const_genf genf, const AElement &_min, const AElement &_max); // constructor for 2nd type
 
-    GenFunc() = delete;
-    GenFunc(genf genf, ArrayElement _min, ArrayElement _max);                     // constructor for 1st type
-    GenFunc(const_genf genf, const ArrayElement &_min, const ArrayElement &_max); // constructor for 2nd type
+    AElement get_min() const;
+    AElement get_max() const;
 
-    ArrayElement operator()(); // for calling just like ordinary generating function
+    void set_min(const AElement &);
+    void set_max(const AElement &);
+
+    AElement generate();
 };
 
-// template <typename Array, typename ArrayElement, typename ReturnType>
-// using precondf = ReturnType (*)(const Array<ArratElement>&);
-
-// template <typename Array, typename ArrayElement>
-// using precondf = ReturnType (*)(const Array<ArratElement>&);
-
-template <template <typename> typename Array, typename ArrayElement /*, typename ...PreconditionReturnTypes */>
+template <template <typename> typename Array>
 class SortFunc
 {
-    // template <typename ReturnType>
-    // using precondf = ReturnType (*)(const Array<ArrayElement>&);
-
-    using sortf = void (*)(Array<ArrayElement> &);
-
-    // precondition functions that return values and take only array
-    // std::tuple<precondf<PreconditionReturnTypes>...> preconditions;
-    // std::tuple<PreconditionReturnTypes...> returns;
-    // sorting function that returns nothing and take only array
-    sortf sorting;
-
 public:
-    Array<ArrayElement> *arr;
-
-    class ArrayNotGiven
-    {
-    };
-
-    SortFunc() = delete;
-    SortFunc(sortf);
-
-    // void precond();
-    void sort();
-};
-
-template <typename T>
-class ArrayElement
-// class that allows comparison and assignment counting
-{
-    T elem;
-    static uint comparisons; // 0 by default
-    static uint assignments; // 0 by default
-public:
-    static bool cmp_on;  // true by default
-    static bool asgn_on; // true by default
-
-    ArrayElement() = delete;
-    ArrayElement(const T &);
-    ArrayElement(T &&);
-
-    ArrayElement &operator=(const ArrayElement &);
-    ArrayElement &operator=(const T &);
-    ArrayElement &operator=(ArrayElement &&);
-    ArrayElement &operator=(T &&);
-
-    void reset();
-
-    template <typename U>
-    friend bool operator==(const ArrayElement<U> &, const ArrayElement<U> &);
-    template <typename U>
-    friend bool operator!=(const ArrayElement<U> &, const ArrayElement<U> &);
-    template <typename U>
-    friend bool operator<(const ArrayElement<U> &, const ArrayElement<U> &);
-    template <typename U>
-    friend bool operator>(const ArrayElement<U> &, const ArrayElement<U> &);
-    template <typename U>
-    friend bool operator<=(const ArrayElement<U> &, const ArrayElement<U> &);
-    template <typename U>
-    friend bool operator>=(const ArrayElement<U> &, const ArrayElement<U> &);
-};
-
-template <typename ArrayElement>
-struct SortStats
-{
-    time_t time;
-    uint len;
-    
-    ArrayElement min;
-    ArrayElement max;
-
-    uint comparisons;
-    uint assignments;
+    template <typename T>
+    virtual void sort(Array<T> &) = 0;
 }
 
-template <template <typename> typename Array, typename ArrayElement>
+template <typename AElement>
+struct SortStats
+{
+    struct MinMax
+    {
+        AElement min{};
+        AElement max{};
+    };
+    struct Time
+    {
+        bool done = false;
+        std::chrono::duration dur{}; // time in milliseconds
+    } struct CmpAsgn
+    {
+        bool done = false;
+        uint comparisons = 0;
+        uint assignments = 0;
+    };
+
+    Time time;
+    MinMax bounds;
+    CmpAsgn cmp_asgn;
+    uint len = -1;
+};
+template <typename AElement>
+std::ostream &operator<<(std::ostream &, const SortStats<AElement>::MinMax &);
+template <typename AElement>
+std::ostream &operator<<(std::ostream &, const SortStats<AElement>::CmpAsgn &);
+template <typename AElement>
+std::ostream &operator<<(std::ostream &, const SortStats<AElement> &);
+
+
+template <typename AElement>
+double dur_to_milliseconds(const SortStats < AElement &);
+
+template <template <typename> typename Array, typename AElement>
 class SortBench
 // implements time testing
 // implements comparison and assignment counting
 {
-    using SortFunc<Array, ArrayElement>::sortf;
-    using GenFunc<ArrayElement>::genf;
-    using GenFunc<ArrayElement>::const_genf;
+    // using sortf = void (*)(Array<AElement> &);
+    // using sort_cmp_asgn = void (*)(Array<ArrayElement<AElement>> &);
+    using genf = AElement (*)(AElement min, AElement max);
+    using const_genf = AElement (*)(const AElement &, const AElement &);
+    // using SortFunc<Array, AElement>::sortf;
+    // using GenFunc<AElement>::genf; ??????????????????????
+    // using GenFunc<AElement>::const_genf;
 
-    SortStats<ArrayElement> stats;
-    GenFunc<ArrayElement> generating;
-    SortFunc<Array, ArrayElement> sorting;
-    Array<ArrayElement> array;
+    SortFunc<Array> sorting;
+    // SortFunc<Array, ArrayElement<AElement>> cmp_asgn_count_sorting;
+    GenFunc<AElement> generating;
+    SortStats<AElement> stats;
+    Array<AElement> array;
+
+    bool full_stats;
 
 protected:
-    void find_comparisons_and_assignments();
-    void time_it();
 public:
-    SortBench() = delete;
-    SortBench(sortf sort, genf generate, ArrayElement min, ArrayElement max);
-    SortBench(sortf sort, const_genf generate, const ArrayElement& min, const ArrayElement& max);
+    // SortBench() = delete;
+    SortBench(SortFunc<Array> *, genf _gen, AElement _min, AElement _max);
+    SortBench(SortFunc<Array> *, const_genf _gen, const AElement &_min, const AElement &_max);
+    SortBench(SortFunc<Array> *, const GenFunc<AElement> &);
 
-    void gen_array();
-    SortStats<ArrayElement> get_stats() const;
+    void gen_array(uint len);
+
+    SortStats<AElement>::CmpAsgn cmp_asgn_test();
+    std::chrono::duration time_test();
+
+    SortStats<AElement> get_stats() const;
+
+    void set_min(const AElement &_min);
+    void set_max(const AElement &_max);
+    SortStats<AElement>::MinMax get_min_max() const;
 };
+
+template <template <typename> typename Array, typename AElement>
+SortStats<AElement> full_test(SortBench<Array, AElement> &);
+
 } // namespace SortingBenchmark
 
 #endif
