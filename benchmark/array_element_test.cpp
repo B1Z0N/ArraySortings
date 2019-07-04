@@ -5,7 +5,7 @@
 #include "array_element.hpp"
 
 template <typename T>
-using arrel = ArrEl::ArrayElement<T>;
+using arrel = srtbch::ArrayElement<T>;
 
 int main()
 {

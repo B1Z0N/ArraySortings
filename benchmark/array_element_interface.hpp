@@ -3,10 +3,10 @@
 
 #include <utility>
 
-namespace ArrEl
+namespace srtbch
 {
 
-using ulong = unsigned long;
+using size_t = unsigned long;
 
 template <typename T>
 class ArrayElement
@@ -14,13 +14,13 @@ class ArrayElement
 {
     T elem {};
 
-    static ulong comparisons; // 0 by default
-    static ulong assignments; // 0 by default
+    static size_t comparisons; // 0 by default
+    static size_t assignments; // 0 by default
 
     static bool cmp_on;  // true by default
     static bool asgn_on; // true by default
 public:
-    ArrayElement();
+    ArrayElement() = default;
     ArrayElement(const T &);
     ArrayElement(const ArrayElement &) = default;
     ArrayElement(T &&);
@@ -31,13 +31,13 @@ public:
     ArrayElement &operator=(ArrayElement &&);
     ArrayElement &operator=(T &&);
 
-    static void reset();
+    static void reset() noexcept;
     
-    static ulong get_cmp();
-    static ulong get_asgn();
+    static size_t get_cmp() noexcept;
+    static size_t get_asgn() noexcept;
 
-    static void off_on_cmp_count(bool);
-    static void off_on_asgn_count(bool);
+    static void off_on_cmp_count(bool) noexcept;
+    static void off_on_asgn_count(bool) noexcept;
 
     bool operator==(const ArrayElement& other);
     bool operator!=(const ArrayElement& other);

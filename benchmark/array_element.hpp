@@ -5,21 +5,17 @@
 
 #include "array_element_interface.hpp"
 
-namespace ArrEl
+namespace srtbch
 {
 template <typename T>
-ulong ArrayElement<T>::comparisons = 0;
+size_t ArrayElement<T>::comparisons = 0;
 template <typename T>
-ulong ArrayElement<T>::assignments = 0;
+size_t ArrayElement<T>::assignments = 0;
 
 template <typename T>
 bool ArrayElement<T>::cmp_on = true;
 template <typename T>
 bool ArrayElement<T>::asgn_on = true;
-
-template <typename T>
-ArrayElement<T>::ArrayElement()
-    : elem{} {}
 
 template <typename T>
 ArrayElement<T>::ArrayElement(const T &el)
@@ -78,32 +74,32 @@ ArrayElement<T> &ArrayElement<T>::operator=(T &&el)
 }
 
 template <typename T>
-inline void ArrayElement<T>::reset()
+inline void ArrayElement<T>::reset() noexcept
 {
     comparisons = 0;
     assignments = 0;
 }
 
 template <typename T>
-inline ulong ArrayElement<T>::get_cmp()
+inline size_t ArrayElement<T>::get_cmp() noexcept
 {
     return comparisons;
 }
 
 template <typename T>
-inline ulong ArrayElement<T>::get_asgn()
+inline size_t ArrayElement<T>::get_asgn() noexcept
 {
     return assignments;
 }
 
 template <typename T>
-inline void ArrayElement<T>::off_on_cmp_count(bool b)
+inline void ArrayElement<T>::off_on_cmp_count(bool b) noexcept
 {
     cmp_on = b;
 }
 
 template <typename T>
-inline void ArrayElement<T>::off_on_asgn_count(bool b)
+inline void ArrayElement<T>::off_on_asgn_count(bool b) noexcept
 {
     asgn_on = b;
 }
@@ -147,6 +143,12 @@ inline bool ArrayElement<T>::operator<=(const ArrayElement<T> &other)
 {
     return !(*this > other);
 }
+
+// template <typename T>
+// inline ArrayElement<T>::operator T()
+// {
+//     return elem;
+// }
 
 } // namespace ArrEl
 #endif
