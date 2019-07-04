@@ -19,32 +19,23 @@ bool ArrayElement<T>::asgn_on = true;
 
 template <typename T>
 ArrayElement<T>::ArrayElement()
-{
-}
+    : elem{} {}
 
 template <typename T>
 ArrayElement<T>::ArrayElement(const T &el)
-    : elem{el}
-{
-}
+    : elem{el} {}
 
-template <typename T>
-ArrayElement<T>::ArrayElement(const ArrayElement<T> &el)
-    : elem{el.elem}
-{
-}
+// template <typename T>
+// ArrayElement<T>::ArrayElement(const ArrayElement<T> &el)
+//     : elem{el.elem} {}
 
 template <typename T>
 ArrayElement<T>::ArrayElement(T &&el)
-    : elem{std::move(el)}
-{
-}
+    : elem{std::move(el)} {}
 
-template <typename T>
-ArrayElement<T>::ArrayElement(ArrayElement<T> &&el)
-    : elem{std::move(el.elem)}
-{
-}
+// template <typename T>
+// ArrayElement<T>::ArrayElement(ArrayElement<T> &&el)
+//     : elem{std::move(el.elem)} {}
 
 template <typename T>
 ArrayElement<T> &ArrayElement<T>::operator=(const ArrayElement<T> &el)
@@ -118,51 +109,43 @@ inline void ArrayElement<T>::off_on_asgn_count(bool b)
 }
 
 template <typename T>
-inline bool operator==(const ArrayElement<T> &a, const ArrayElement<T> &b)
+inline bool ArrayElement<T>::operator==(const ArrayElement<T> &other)
 {
-    if (a.cmp_on)
-        a.comparisons++;
-    return a.elem == b.elem;
+    if (cmp_on)
+        comparisons++;
+    return elem == other.elem;
 }
 
 template <typename T>
-inline bool operator!=(const ArrayElement<T> &a, const ArrayElement<T> &b)
+inline bool ArrayElement<T>::operator!=(const ArrayElement<T> &other)
 {
-    if (a.cmp_on)
-        a.comparisons++;
-    return a.elem != b.elem;
+    return !(*this == other);
 }
 
 template <typename T>
-inline bool operator>(const ArrayElement<T> &a, const ArrayElement<T> &b)
+inline bool ArrayElement<T>::operator>(const ArrayElement<T> &other)
 {
-    if (a.cmp_on)
-        a.comparisons++;
-    return a.elem > b.elem;
+    if (cmp_on)
+        comparisons++;
+    return elem > other.elem;
 }
 
 template <typename T>
-inline bool operator<(const ArrayElement<T> &a, const ArrayElement<T> &b)
+inline bool ArrayElement<T>::operator<(const ArrayElement<T> &other)
 {
-    if (a.cmp_on)
-        a.comparisons++;
-    return a.elem < b.elem;
+    return !(*this == other) && !(*this > other);
 }
 
 template <typename T>
-inline bool operator>=(const ArrayElement<T> &a, const ArrayElement<T> &b)
+inline bool ArrayElement<T>::operator>=(const ArrayElement<T> &other)
 {
-    if (a.cmp_on)
-        a.comparisons++;
-    return a.elem >= b.elem;
+    return !(*this < other);
 }
 
 template <typename T>
-inline bool operator<=(const ArrayElement<T> &a, const ArrayElement<T> &b)
+inline bool ArrayElement<T>::operator<=(const ArrayElement<T> &other)
 {
-    if (a.cmp_on)
-        a.comparisons++;
-    return a.elem <= b.elem;
+    return !(*this > other);
 }
 
 } // namespace ArrEl
