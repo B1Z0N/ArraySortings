@@ -3,8 +3,14 @@
 
 #include <vector>
 #include <tuple>
-#include <array>
 #include <chrono>
+#include <random>
+#include <iostream>
+#include <algorithm>
+#include <functional>
+#include <cassert>
+#include <array>
+#include <iterator>
 
 namespace srtbch
 {
