@@ -7,6 +7,7 @@
 #include <array>
 
 #include "genfunc.hpp"
+#include "array_element.hpp"
 
 namespace srtbch
 {
@@ -21,15 +22,15 @@ struct CmpAsgn
 
 using SortStats = std::vector<std::tuple<
                   size_t,                     // array length
-                  std::chrono::duration,      // sorting duration
+                  std::chrono::nanoseconds,   // sorting duration
                   CmpAsgn                     // comparisons and assignments
-                  >>
+                  >>;
 
 
 template <
     typename T,
-    template <typename> typename SortFunctor
-    typename GenFunc = GenFunctor<T>,
+    template <typename> typename SortFunctor,
+    typename GenFunc = unlimited_mtgenf<T>
     >
 // look forward to thread safety
 // look forward to array + - and so on operations on ArrayElement, for sortings like RadixSort
@@ -37,18 +38,19 @@ class SortBench
 {
     SortStats stats;
 
-    Functor<T> time_sort;
-    Functor<ArrayElement<T>> cmp_asgn_sort;
+    SortFunctor<T> time_sort;
+    SortFunctor<ArrayElement<T>> cmp_asgn_sort;
+    GenFunc gen {};
 public:
 
-    SortStats operator()(std::vector<size_t> arrays_sizes );
-    SortStats operator()(size_t array_size, size_t msr_num);
+    SortStats operator()(std::vector<size_t>);
+    SortStats operator()(size_t, size_t);
 private:
 
     void measure(size_t size);
 
-    std::pair<size_t, size_t> test_single_cmp_asgn(size_t len);
-    std::chrono:duration test_single_time(size_t len);
+    std::pair<size_t, size_t> test_single_cmp_asgn(std::vector<ArrayElement<T>>);
+    std::chrono::nanoseconds   test_single_time(std::vector<T>);
 };
 
 

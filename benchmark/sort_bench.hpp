@@ -5,6 +5,8 @@
 #include <tuple>
 #include <chrono>
 #include <array>
+#include <functional>
+#include <algorithm>
 
 #include "sort_bench_interface.hpp"
 
@@ -14,11 +16,11 @@ namespace srtbch
 
 template <
     typename T,
-    template <typename> typename SortFunctor
-    typename GenFunc = unlimited_mtgenf<T>,
+    template <typename> typename SortFunctor,
+    typename GenFunc
     >
-SortStats 
-SortBench<T, SortFunctor, GenFunc>::operator()(std::vector<size_t> arrays_sizes)
+SortStats
+SortBench<T, SortFunctor, GenFunc>::operator () (std::vector<size_t> arrays_sizes)
 {
 	for (auto size : arrays_sizes)
 	{
@@ -31,11 +33,11 @@ SortBench<T, SortFunctor, GenFunc>::operator()(std::vector<size_t> arrays_sizes)
 
 template <
     typename T,
-    template <typename> typename SortFunctor
-    typename GenFunc = unlimited_mtgenf<T>,
+    template <typename> typename SortFunctor,
+    typename GenFunc
     >
 SortStats 
-SortBench<T, SortFunctor, GenFunc>::operator(size_t array_size, size_t msr_num)
+SortBench<T, SortFunctor, GenFunc>::operator () (size_t array_size, size_t msr_num)
 {
 	while (msr_num--)
 	{
@@ -48,14 +50,23 @@ SortBench<T, SortFunctor, GenFunc>::operator(size_t array_size, size_t msr_num)
 
 template <
     typename T,
-    template <typename> typename SortFunctor
-    typename GenFunc = unlimited_mtgenf<T>,
+    template <typename> typename SortFunctor,
+    typename GenFunc
     >
 void 
 SortBench<T, SortFunctor, GenFunc>::measure(size_t size)
 {
-	auto tm          {test_single_time(size)};
-	auto [cmp, asgn] {test_single_cmp_asgn(size)};
+	std::vector<T> tvec (size);
+	std::generate(std::begin(tvec), std::end(tvec), std::ref(gen));
+	auto tm          {test_single_time(tvec)};
+
+
+	std::vector<ArrayElement<T>> cavec (size);
+	std::transform(std::begin(tvec), std::end(tvec), 
+				   std::begin(cavec), [](T elem) { 
+				   					  return ArrayElement<T> {elem}; 
+									 });
+	auto [cmp, asgn] {test_single_cmp_asgn(cavec)};
 
 	stats.push_back({size, tm, {cmp, asgn}});
 }
@@ -63,14 +74,13 @@ SortBench<T, SortFunctor, GenFunc>::measure(size_t size)
 
 template <
     typename T,
-    template <typename> typename SortFunctor
-    typename GenFunc = unlimited_mtgenf<T>,
+    template <typename> typename SortFunctor,
+    typename GenFunc
     >
 std::pair<size_t, size_t> 
-SortBench<T, SortFunctor, GenFunc>::test_single_cmp_asgn(size_t len)
+SortBench<T, SortFunctor, GenFunc>::test_single_cmp_asgn(std::vector<ArrayElement<T>> vec)
 {
-	std::array<ArrayElement<T>, len> arr {GenFunc(len)};
-	cmp_asgn_sort(arr.data(), arr.size());
+	cmp_asgn_sort(vec.data(), vec.size());
 
 	return {ArrayElement<T>::comparisons,
 	        ArrayElement<T>::assignments};
@@ -79,19 +89,19 @@ SortBench<T, SortFunctor, GenFunc>::test_single_cmp_asgn(size_t len)
 
 template <
     typename T,
-    template <typename> typename SortFunctor
-    typename GenFunc = unlimited_mtgenf<T>,
+    template <typename> typename SortFunctor,
+    typename GenFunc
     >
-std::chrono::duration
-SortBench<T, SortFunctor, GenFunc>::test_single_time(size_t len)
+std::chrono::nanoseconds
+SortBench<T, SortFunctor, GenFunc>::test_single_time(std::vector<T> vec)
 {
-	std::array<T, len> arr {GenFunctor(len)};
+	using namespace std::chrono;
 
-	std::chrono::steady_clock::time_point start {std::chrono::steady_clock::now()};
-	time_sort(arr.data(), arr.size());
-	std::chrono::steady_clock::time_point end {std::chrono::steady_clock::now()};
+	steady_clock::time_point start {steady_clock::now()};
+	time_sort(vec.data(), vec.size());
+	steady_clock::time_point end {steady_clock::now()};
 
-	return end - start; // std::chrono:duration
+	return nanoseconds(end - start); // std::chrono:nanoseconds
 }
 
 
