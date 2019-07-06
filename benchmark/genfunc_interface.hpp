@@ -73,8 +73,15 @@ template <
     typename OutT,
     typename SeededPRNG_T
     >
-// inT and ouT should be of numeric types
-// what if type allocated on the heap, and we don't know actual size of it's type?
+// class for generating values of type OutT with help of seeded
+// generator of type SeededPRNG_T thata generates values of type InT
+
+// InT and OuT should be of numeric types (real or integral)
+// SeedePRNG_T must meets the requirements of RandomNumberEngine(named requirement)
+
+// for classes that use heap, or mask their actual size(with pointers, for example)
+// write your own manual generator, using this one
+// class meets the requirements of RandomNumberEngine(named requirement) 
 class GenFunctor_basic
 {
     static constexpr size_t outsz   {sizeof(OutT)};
@@ -85,6 +92,7 @@ class GenFunctor_basic
 public:
 
     OutT operator()()
+    // call for generating values
     {
         auto buffer {gen_buffer().data()};
 
@@ -95,6 +103,8 @@ public:
 private:
 
     auto gen_buffer()
+    // function that generates buffer of InT 
+    // long enough for covering type OutT
     {
         std::array<InT, buff_len> arr {};
         std::generate(std::begin(arr), std::end(arr), std::ref(generator));
@@ -106,14 +116,23 @@ private:
 
 template <typename T, typename DistribT, typename GeneratorT>
 class LimGenFunctor
+// class for generating limited values of different types
+// with help of:
+// T - type being generated
+// DistribT - distribution of generation, that meets the requirements
+// of RandomNumberDistribution(named requirement)
+// GeneratorT - generator, that meets the requirements 
+// of RandomNumberEngine(named requirement)
 {
     GeneratorT gen  {};
     DistribT dis;
 public:
     LimGenFunctor(T from, T to)
+    // construct distribution
     : dis{from, to} {}
     
     T operator()()
+    // call for generating
     {
         return dis(gen);
     }
@@ -124,9 +143,13 @@ public:
 
 
 class __MT19937Seeder {
+// helper class for seeding MT19937
+// satisfies RandomNumberEngine(named requirement)
 
     template <class It>
     class SeedSeq
+    // class for passing to mt19937 constructor
+    // stores seeded values
     {
         It from;
         It to;
@@ -137,6 +160,8 @@ class __MT19937Seeder {
 
         template <typename It2>
         void generate(It2 b, It2 e)
+        // fill given range [b, e] with
+        // seed values
         {
             assert((e - b) <= (to - from));
             std::copy(from, from + (e - b), b);
@@ -149,6 +174,8 @@ public:
 
     template <typename It>
     __MT19937Seeder(It start, It end)
+    // constructs seeded mt19937
+    // start, end - iterators, that delimit seed sequence
     {
         SeedSeq sequence {start, end};
         gen = std::mt19937 {sequence};
@@ -158,6 +185,7 @@ public:
     auto max() { return gen.max(); }
 
     auto operator()()
+    // call for generation
     {
         return gen();
     }
@@ -166,12 +194,16 @@ public:
 static constexpr size_t mt19937_seed_length {624};
 
 using SeededMT = SeededPRNG<uint32_t, __MT19937Seeder, mt19937_seed_length>;
+// mt19937 ready for generation, seeded with std::random_device
 
 template <typename InT, typename OutT, typename PRNG, size_t seedlen>
 using GenFunctor = GenFunctor_basic<InT, OutT, SeededPRNG<InT, PRNG, seedlen>>;
+// template class for creating own generators
 
 template <typename OutT>
 using unlimited_mtgenf = GenFunctor_basic<uint32_t, OutT, SeededMT>;
+// mt19937 ready for generation of values, of type OutT
+// OutT - should be numeric (real or integral)
 
 template <typename IntT>
 using lim_unif_int_mtgenf = LimGenFunctor<
@@ -179,6 +211,8 @@ using lim_unif_int_mtgenf = LimGenFunctor<
                                 std::uniform_int_distribution<IntT>,
                                 SeededMT
                                 >;
+// class that generates limited range values of type IntT
+// IntT should be of integral type
 
 template <typename RealT> 
 using lim_unif_real_mtgenf = LimGenFunctor<
@@ -186,6 +220,8 @@ using lim_unif_real_mtgenf = LimGenFunctor<
                                 std::uniform_real_distribution<RealT>,
                                 SeededMT
                                 >;
+// class that generates limited range values of type RealT
+// IntT should be of real type
 
 
 };
