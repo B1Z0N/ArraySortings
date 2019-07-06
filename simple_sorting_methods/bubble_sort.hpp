@@ -3,7 +3,7 @@
 
 #include <algorithm> // for std::swap
 
-namespace BubbleSorting
+namespace bblsrt
 {
 using uint = unsigned int;
 
