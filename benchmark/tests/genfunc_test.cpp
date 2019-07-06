@@ -2,6 +2,7 @@
 #include <random>
 #include <iostream>
 #include <algorithm>
+#include <iterator>
 
 
 #include "genfunc_interface.hpp"
