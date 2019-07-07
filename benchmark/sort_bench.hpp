@@ -7,6 +7,8 @@
 #include <array>
 #include <functional>
 #include <algorithm>
+#include <stdexcept>
+
 
 #include "sort_bench_interface.hpp"
 
@@ -19,9 +21,30 @@ template <
     template <typename> typename SortFunctor,
     typename GenFunc
     >
+SortBench<T, SortFunctor, GenFunc>::SortBench(bool keep_arr) 
+	:keep{keep_arr} {}
+
+
+template <
+    typename T,
+    template <typename> typename SortFunctor,
+    typename GenFunc
+    >
+void SortBench<T, SortFunctor, GenFunc>::keep_arrays()
+{	
+	keep = true;
+}
+
+
+template <
+    typename T,
+    template <typename> typename SortFunctor,
+    typename GenFunc
+    >
 SortStats
 SortBench<T, SortFunctor, GenFunc>::operator () (std::vector<size_t> arrays_sizes)
 {
+	sort_arrs.clear();
 	for (auto size : arrays_sizes)
 	{
 		measure(size);
@@ -39,6 +62,7 @@ template <
 SortStats 
 SortBench<T, SortFunctor, GenFunc>::operator () (size_t array_size, size_t msr_num)
 {
+	sort_arrs.clear();
 	while (msr_num--)
 	{
 		measure(array_size);
@@ -53,14 +77,34 @@ template <
     template <typename> typename SortFunctor,
     typename GenFunc
     >
+std::vector<std::vector<T>>
+SortBench<T, SortFunctor, GenFunc>::arrays()
+{
+	if (!is_inited) 
+	{
+		throw std::logic_error {
+			"Uninitialized arrays, use operator() to fill it first"
+		};
+	}
+
+	return sort_arrs;
+}
+
+
+template <
+    typename T,
+    template <typename> typename SortFunctor,
+    typename GenFunc
+    >
 void 
 SortBench<T, SortFunctor, GenFunc>::measure(size_t size)
 {
+
 	std::vector<T> tvec (size);
 	std::generate(std::begin(tvec), std::end(tvec), std::ref(gen));
-	auto tm          {test_single_time(tvec)};
+	auto tm {test_single_time(tvec)};
 
-
+	{
 	std::vector<ArrayElement<T>> cavec (size);
 	std::transform(std::begin(tvec), std::end(tvec), 
 				   std::begin(cavec), [](T elem) { 
@@ -69,6 +113,13 @@ SortBench<T, SortFunctor, GenFunc>::measure(size_t size)
 	auto [cmp, asgn] {test_single_cmp_asgn(cavec)};
 
 	stats.push_back({size, tm, {cmp, asgn}});
+	}
+
+	if (keep)
+	{
+		sort_arrs.push_back(tvec);
+		is_inited = true;
+	}
 }
 
 
@@ -82,8 +133,8 @@ SortBench<T, SortFunctor, GenFunc>::test_single_cmp_asgn(std::vector<ArrayElemen
 {
 	cmp_asgn_sort(vec.data(), vec.size());
 
-	return {ArrayElement<T>::comparisons,
-	        ArrayElement<T>::assignments};
+	return {ArrayElement<T>::get_cmp(),
+	        ArrayElement<T>::get_asgn()};
 }
 
 

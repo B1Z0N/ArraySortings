@@ -5,6 +5,7 @@
 #include <tuple>
 #include <chrono>
 #include <array>
+#include <stdexcept>
 
 #include "genfunc.hpp"
 #include "array_element.hpp"
@@ -41,16 +42,25 @@ class SortBench
     SortFunctor<T> time_sort;
     SortFunctor<ArrayElement<T>> cmp_asgn_sort;
     GenFunc gen {};
-public:
 
-    SortStats operator()(std::vector<size_t>);
-    SortStats operator()(size_t, size_t);
+    std::vector<std::vector<T>> sort_arrs;
+    bool is_inited {false};
+    bool keep {false};
+public:
+    SortBench(bool);
+
+    void keep_arrays();
+
+    SortStats operator()(std::vector<size_t> array_sizes);
+    SortStats operator()(size_t array_size, size_t measure_num);
+
+    std::vector<std::vector<T>> arrays();
 private:
 
     void measure(size_t size);
 
-    std::pair<size_t, size_t> test_single_cmp_asgn(std::vector<ArrayElement<T>>);
-    std::chrono::nanoseconds   test_single_time(std::vector<T>);
+    std::pair<size_t, size_t> test_single_cmp_asgn(std::vector<ArrayElement<T>> vec);
+    std::chrono::nanoseconds  test_single_time(std::vector<T> vec);
 };
 
 
