@@ -21,17 +21,17 @@ namespace srtbch {
 
 
 template <
-    typename T, 
+    typename T,
     typename PRNG_T,
     size_t seed_length
     >
 class SeededPRNG
 // class that generates seed values for PRNG
 // T - type for generating
-// PRNG_T - type of generator should have a constructor 
+// PRNG_T - type of generator should have a constructor
 // that accepts two iterators of seed iterable
 // seed_length - length of seed iterable
-// class meets the requirements of RandomNumberEngine(named requirement) 
+// class meets the requirements of RandomNumberEngine(named requirement)
 {
     PRNG_T generator;
 public:
@@ -43,11 +43,11 @@ public:
     SeededPRNG()
     // constructor, seeds our PRNG_T object with values of appropriate type
     {
-        std::independent_bits_engine<
-                                     std::random_device,
-                                     sizeof(uint16_t),
-                                     uint16_t
-                                     > rd {};
+        std::independent_bits_engine <
+        std::random_device,
+            sizeof(uint16_t),
+            uint16_t
+            > rd {};
         constexpr auto enough_size {
             static_cast<int>(std::ceil(0.5 * sizeof(T) * seed_length))
         };
@@ -84,7 +84,7 @@ template <
 
 // for classes that use heap, or mask their actual size(with pointers, for example)
 // write your own manual generator, using this one
-// class meets the requirements of RandomNumberEngine(named requirement) 
+// class meets the requirements of RandomNumberEngine(named requirement)
 class GenFunctor_basic
 {
     static constexpr size_t outsz   {sizeof(OutT)};
@@ -106,7 +106,7 @@ public:
 private:
 
     auto gen_buffer()
-    // function that generates buffer of InT 
+    // function that generates buffer of InT
     // long enough for covering type OutT
     {
         std::array<InT, buff_len> arr {};
@@ -117,28 +117,88 @@ private:
 };
 
 
-template <typename T, typename DistribT, typename GeneratorT>
-class LimGenFunctor
+template <
+    typename T,
+    typename DistribT,
+    typename GeneratorT
+    >
+class LimGenFunctor_base
 // class for generating limited values of different types
 // with help of:
 // T - type being generated
 // DistribT - distribution of generation, that meets the requirements
 // of RandomNumberDistribution(named requirement)
-// GeneratorT - generator, that meets the requirements 
+// GeneratorT - generator, that meets the requirements
 // of RandomNumberEngine(named requirement)
+// base class, that sets interface to other classes
 {
     GeneratorT gen  {};
     DistribT dis;
 public:
-    LimGenFunctor(T from, T to)
+    LimGenFunctor_base(const T& from, const T& to)
     // construct distribution
-    : dis{from, to} {}
-    
+        : dis{from, to} {}
+
+    // LimGenFunctor_base(T from, T to)
+    // // construct distribution
+    //     : dis{from, to} {}
+
     T operator()()
     // call for generating
     {
         return dis(gen);
     }
+};
+
+
+template <
+    typename T,
+    typename DistribT,
+    typename GeneratorT,
+    typename From,
+    typename To
+    >
+class LimGenFunctorType : public LimGenFunctor_base<T, DistribT, GeneratorT>
+// class for generating limited values of different types
+// with help of:
+// T - type being generated
+// DistribT - distribution of generation, that meets the requirements
+// of RandomNumberDistribution(named requirement)
+// GeneratorT - generator, that meets the requirements
+// of RandomNumberEngine(named requirement)
+// classes From and To should have static member "value" of type T
+// that limits the range [From::value, To::value]
+// this class is used when limitters of type T, couldn't
+// be passed as nontype template arguments(e.g. double, const char*)
+{
+    using parent = LimGenFunctor_base<T, DistribT, GeneratorT>;
+public:
+    LimGenFunctorType()
+    // construct distribution
+        : parent{From::value, To::value} {}
+};
+
+
+template <
+    typename T,
+    typename DistribT,
+    typename GeneratorT,
+    T from,
+    T to
+    >
+// class for generating limited values of different types
+// in range [from, to]
+// with help of:
+// T - type being generated
+// DistribT - distribution of generation, that meets the requirements
+// of RandomNumberDistribution(named requirement)
+// GeneratorT - generator, that meets the requirements
+// of RandomNumberEngine(named requirement)
+class LimGenFunctorVal : LimGenFunctor_base<T, DistribT, GeneratorT>
+{
+    using parent = LimGenFunctor_base<T, DistribT, GeneratorT>;
+public:
+    LimGenFunctorVal() : parent{from , to} {}
 };
 
 
@@ -182,7 +242,7 @@ public:
     {
         SeedSeq sequence {start, end};
         gen = std::mt19937 {sequence};
-    }    
+    }
 
     auto min() { return gen.min(); }
     auto max() { return gen.max(); }
@@ -208,23 +268,45 @@ using unlimited_mtgenf = GenFunctor_basic<uint32_t, OutT, SeededMT>;
 // mt19937 ready for generation of values, of type OutT
 // OutT - should be numeric (real or integral)
 
-template <typename IntT>
-using lim_unif_int_mtgenf = LimGenFunctor<
-                                IntT,
-                                std::uniform_int_distribution<IntT>,
-                                SeededMT
-                                >;
+
+template <typename IntT, IntT from, IntT to>
+using lim_unif_int_mtgenf = 
+    LimGenFunctorVal < IntT,
+        std::uniform_int_distribution<IntT>,
+        SeededMT, from, to
+    >;
 // class that generates limited range values of type IntT
 // IntT should be of integral type
 
-template <typename RealT> 
-using lim_unif_real_mtgenf = LimGenFunctor<
-                                RealT,
-                                std::uniform_real_distribution<RealT>,
-                                SeededMT
-                                >;
+
+// next classes trying to get around the fact that
+// we couldn't pass real numbers through template
+// nontype arguments
+
+
+template <typename RealT>
+using lim_unif_real_mtgenf = 
+    LimGenFunctor_base <
+        RealT,
+        std::uniform_real_distribution<RealT>,
+        SeededMT
+    >;
 // class that generates limited range values of type RealT
-// IntT should be of real type
+// RealT should be of real type
+// for using this class with SortBench you should overload it
+// and pass default compiletime arguments to constructor
+
+
+template <typename RealT, typename From, typename To>
+using lim_unif_real_mtgenf_type = 
+    LimGenFunctorType < RealT,
+        std::uniform_real_distribution<RealT>,
+        SeededMT, From, To
+    >;
+// class that generates limited range values of type RealT
+// RealT should be of real type
+// classes From and To should have static member "value" of type RealT
+// that shows the range [From::value, To::value]
 
 
 };
