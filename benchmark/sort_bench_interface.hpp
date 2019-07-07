@@ -47,9 +47,9 @@ class SortBench
     bool is_inited {false};
     bool keep {false};
 public:
-    SortBench(bool);
+    SortBench(bool keep = true); // true default
 
-    void keep_arrays();
+    void keep_arrays(bool should = true); // default true
 
     SortStats operator()(std::vector<size_t> array_sizes);
     SortStats operator()(size_t array_size, size_t measure_num);
@@ -57,10 +57,10 @@ public:
     std::vector<std::vector<T>> arrays();
 private:
 
-    void measure(size_t size);
+    void measure(size_t sz);
 
-    std::pair<size_t, size_t> test_single_cmp_asgn(std::vector<ArrayElement<T>> vec);
-    std::chrono::nanoseconds  test_single_time(std::vector<T> vec);
+    std::pair<size_t, size_t> test_single_cmp_asgn(std::vector<ArrayElement<T>>&);
+    std::chrono::nanoseconds  test_single_time(std::vector<T>&);
 };
 
 

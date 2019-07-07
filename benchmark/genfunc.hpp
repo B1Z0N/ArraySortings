@@ -1,3 +1,6 @@
+// classes for generating random values of numeric and real type
+// all other types can be deduced from this types
+
 #ifndef GENFUNC
 #define GENFUNC
 

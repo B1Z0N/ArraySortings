@@ -14,7 +14,12 @@ struct BubbleSort
 		for (uint i = 0; i < len - 1; i++)
 			for (uint j = 0; j < len - i - 1; j++)
 				if (arr[j] > arr[j + 1])
-					std::swap(arr[j], arr[j + 1]);
+				{
+					T temp = arr[j + 1];
+					arr[j + 1] = arr[j];
+					arr[j] = temp;
+				}
+
 	}
 };
 
@@ -124,7 +129,7 @@ void test_sort(size_t array_size, size_t measure_num)
 void test_sort_ints()
 {
 	// test_sort<int, BubbleSort>(4, 3);
-	test_sort<int, BubbleSort, srtbch::lim_unif_int_mtgenf>(25, 3);
+	test_sort<int, BubbleSort>(25, 3);
 	// test_sort<int, BubbleSort>(100, 3);
 }
 

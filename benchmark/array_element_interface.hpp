@@ -1,3 +1,5 @@
+// template class for comparisons and assignments counting
+
 #ifndef ARRAY_ELEMENT_INTERFACE
 #define ARRAY_ELEMENT_INTERFACE
 
@@ -10,7 +12,7 @@ using size_t = unsigned long;
 
 template <typename T>
 class ArrayElement
-// class that allows comparison and assignment counting
+// class for comparison and assignment counting
 {
     T elem {};
 
