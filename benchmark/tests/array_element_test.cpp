@@ -2,7 +2,7 @@
 #include <vector>
 #include <iostream>
 
-#include "array_element.hpp"
+#include "../array_element.hpp"
 
 template <typename T>
 using arrel = srtbch::ArrayElement<T>;

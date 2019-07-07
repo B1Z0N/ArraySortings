@@ -1,8 +1,8 @@
 #include <iostream>
 #include <functional>
 
-#include "sort_bench_interface.hpp"
-// #include "../simple_sorting_methods/bubble_sort.hpp"
+#include "../sort_bench_interface.hpp"
+// #include "../../simple_sorting_methods/bubble_sort.hpp"
 
 template <typename T>
 struct BubbleSort

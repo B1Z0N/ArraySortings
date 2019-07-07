@@ -5,7 +5,7 @@
 #include <iterator>
 
 
-#include "genfunc_interface.hpp"
+#include "../genfunc_interface.hpp"
 
 // using namespace std;
 // using namespace srtbch;
