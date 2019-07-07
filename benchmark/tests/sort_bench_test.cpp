@@ -111,10 +111,10 @@ auto& standard_ssoutput(const srtbch::SortStats& ss) { return ssoutput(std::cout
 
 
 template <
-	typename T, 
-	template <typename> typename Sort, 
-	typename GenF = srtbch::unlimited_mtgenf<T>
-	>
+    typename T,
+    template <typename> typename Sort,
+    typename GenF = srtbch::unlimited_mtgenf<T>
+    >
 void test_sort(size_t array_size, size_t measure_num)
 {
 	srtbch::SortBench<T, Sort, GenF> srt {true, true};
@@ -135,7 +135,27 @@ void test_sort_ints()
 	// test_sort<int, BubbleSort>(100, 3);
 }
 
+struct From	{
+	constexpr static double value = 3.45;
+};
+
+struct To   {
+	constexpr static double value = 5.942;
+};
+
+
+void test_sort_doubles()
+{
+
+	test_sort<double, BubbleSort,
+	          srtbch::lim_unif_real_mtgenf_type<double, From, To>>(4, 3);
+
+	// test_sort<int, BubbleSort>(25, 3);
+	// test_sort<int, BubbleSort>(100, 3);
+}
+
 int main()
 {
 	test_sort_ints();
+	test_sort_doubles();
 }
