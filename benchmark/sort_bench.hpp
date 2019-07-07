@@ -133,8 +133,12 @@ SortBench<T, SortFunctor, GenFunc>::test_single_cmp_asgn(std::vector<ArrayElemen
 {
 	cmp_asgn_sort(vec.data(), vec.size());
 
-	return {ArrayElement<T>::get_cmp(),
-	        ArrayElement<T>::get_asgn()};
+	auto cmp  = ArrayElement<T>::get_cmp();
+	auto asgn = ArrayElement<T>::get_asgn();
+
+	ArrayElement<T>::reset();
+
+	return {cmp, asgn};
 }
 
 
