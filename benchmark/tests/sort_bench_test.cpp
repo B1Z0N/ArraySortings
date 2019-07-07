@@ -124,7 +124,7 @@ void test_sort(size_t array_size, size_t measure_num)
 void test_sort_ints()
 {
 	// test_sort<int, BubbleSort>(4, 3);
-	test_sort<int, BubbleSort>(25, 3);
+	test_sort<int, BubbleSort, srtbch::lim_unif_int_mtgenf>(25, 3);
 	// test_sort<int, BubbleSort>(100, 3);
 }
 
