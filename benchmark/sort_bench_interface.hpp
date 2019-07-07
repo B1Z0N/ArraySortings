@@ -43,19 +43,26 @@ class SortBench
     SortFunctor<ArrayElement<T>> cmp_asgn_sort;
     GenFunc gen {};
 
-    std::vector<std::vector<T>> sort_arrs;
-    bool is_inited {false};
-    bool keep {false};
-public:
-    SortBench(bool keep = true); // true default
+    std::vector<std::vector<T>> notsorted_arrs;
+    bool keep_bef;
 
-    void keep_arrays(bool should = true); // default true
+    std::vector<std::vector<T>> sorted_arrs;
+    bool keep_aft;
+
+    bool is_inited {false};
+public:
+    SortBench(bool keep_before = false, bool keep_after = false);
+
+    void keep_before(bool should = false); 
+    void keep_after (bool should = false); 
 
     SortStats operator()(std::vector<size_t> array_sizes);
     SortStats operator()(size_t array_size, size_t measure_num);
 
-    std::vector<std::vector<T>> arrays();
+    std::vector<std::vector<T>> notsorted_arrays();
+    std::vector<std::vector<T>> sorted_arrays();
 private:
+    void clear_data();
 
     void measure(size_t sz);
 

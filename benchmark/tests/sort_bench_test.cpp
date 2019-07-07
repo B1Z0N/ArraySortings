@@ -117,19 +117,21 @@ template <
 	>
 void test_sort(size_t array_size, size_t measure_num)
 {
-	srtbch::SortBench<T, Sort, GenF> srt {true};
+	srtbch::SortBench<T, Sort, GenF> srt {true, true};
 
 	auto res {srt(array_size, measure_num)};
 	standard_ssoutput(res);
+	std::cout << "Generated containers is: \n";
+	print_container(std::cout, srt.notsorted_arrays());
 	std::cout << "And sorted containers is: \n";
-	print_container(std::cout, srt.arrays());
+	print_container(std::cout, srt.sorted_arrays());
 	std::cout << std::endl;
 }
 
 void test_sort_ints()
 {
-	// test_sort<int, BubbleSort>(4, 3);
-	test_sort<int, BubbleSort>(25, 3);
+	test_sort<int, BubbleSort>(4, 3);
+	// test_sort<int, BubbleSort>(25, 3);
 	// test_sort<int, BubbleSort>(100, 3);
 }
 

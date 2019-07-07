@@ -23,8 +23,8 @@ template <
     template <typename> typename SortFunctor,
     typename GenFunc
     >
-SortBench<T, SortFunctor, GenFunc>::SortBench(bool keep_arr) // false - default
-	:keep{keep_arr} {}
+SortBench<T, SortFunctor, GenFunc>::SortBench(bool keep_before, bool keep_after) // false - default
+	:keep_bef{keep_before}, keep_aft{keep_after} {}
 
 
 template <
@@ -32,9 +32,22 @@ template <
     template <typename> typename SortFunctor,
     typename GenFunc
     >
-void SortBench<T, SortFunctor, GenFunc>::keep_arrays(bool should) // false - default
+void 
+SortBench<T, SortFunctor, GenFunc>::keep_before(bool should) // false - default
 {	
-	keep = should;
+	keep_bef = should;
+}
+
+
+template <
+    typename T,
+    template <typename> typename SortFunctor,
+    typename GenFunc
+    >
+void 
+SortBench<T, SortFunctor, GenFunc>::keep_after(bool should) // false - default
+{	
+	keep_aft = should;
 }
 
 
@@ -46,8 +59,7 @@ template <
 SortStats
 SortBench<T, SortFunctor, GenFunc>::operator () (std::vector<size_t> arrays_sizes)
 {
-	stats.clear();		// clear previous
-	sort_arrs.clear();  // data
+	clear_data();
 	for (auto size : arrays_sizes)
 	{
 		measure(size);
@@ -65,8 +77,7 @@ template <
 SortStats 
 SortBench<T, SortFunctor, GenFunc>::operator () (size_t array_size, size_t msr_num)
 {
-	stats.clear();		// clear previous
-	sort_arrs.clear();	// data
+	clear_data();
 	while (msr_num--)
 	{
 		measure(array_size);
@@ -82,7 +93,33 @@ template <
     typename GenFunc
     >
 std::vector<std::vector<T>>
-SortBench<T, SortFunctor, GenFunc>::arrays()
+SortBench<T, SortFunctor, GenFunc>::notsorted_arrays()
+{
+	if (!is_inited)
+	{
+		throw std::logic_error {
+			"Uninitialized arrays, use operator() to fill it first"
+		};
+	}
+
+	if (!keep_bef)
+	{
+		throw std::logic_error {
+			"Call keep_before(), and than operator() to get this arrays"
+		};
+	}
+
+	return notsorted_arrs;
+}
+
+
+template <
+    typename T,
+    template <typename> typename SortFunctor,
+    typename GenFunc
+    >
+std::vector<std::vector<T>>
+SortBench<T, SortFunctor, GenFunc>::sorted_arrays()
 {
 	if (!is_inited) 
 	{
@@ -90,8 +127,29 @@ SortBench<T, SortFunctor, GenFunc>::arrays()
 			"Uninitialized arrays, use operator() to fill it first"
 		};
 	}
+	
+	if (!keep_aft)
+	{
+		throw std::logic_error {
+			"Call keep_after(), and than operator() to get this arrays"
+		};
+	}
 
-	return sort_arrs;
+	return sorted_arrs;
+}
+
+
+template <
+    typename T,
+    template <typename> typename SortFunctor,
+    typename GenFunc
+    >
+void 
+SortBench<T, SortFunctor, GenFunc>::clear_data()
+{
+	stats.clear();			// clear
+	sorted_arrs.clear();	// previous
+	notsorted_arrs.clear();	// data
 }
 
 
@@ -107,6 +165,12 @@ SortBench<T, SortFunctor, GenFunc>::measure(size_t size)
 
 	std::vector<T> tvec (size);										// time vector
 	std::generate(std::begin(tvec), std::end(tvec), std::ref(gen));
+
+	if (keep_bef)
+	{
+		notsorted_arrs.push_back(tvec); // backup notsorted array
+		is_inited = true;				// it is inited now
+	}
 	
 	{ // scope start
 
@@ -128,10 +192,10 @@ SortBench<T, SortFunctor, GenFunc>::measure(size_t size)
 
 	} // scope end for minimize usage of memory(lifetime of cavec ends here)
 
-	if (keep)
+	if (keep_aft)
 	{
-		sort_arrs.push_back(tvec); // add sorted array to sort_arrays
-		is_inited = true;		   // it is inited now
+		sorted_arrs.push_back(tvec); // add sorted array to sort_arrays
+		is_inited = true;		   	 // it is inited now
 	}
 }
 
