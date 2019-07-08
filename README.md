@@ -87,6 +87,7 @@ First of all, all of this aliases are based on [mt19937 generator](https://en.wi
   * `IntT` - type, values of which are about to be generated, should be integral (e.g `short int`, `long long`).
   * `IntT from` - value that shows the beginning of the interval.
   * `IntT to` - value that shows the ending of the interval.
+  
 Class uses [`std::uniform_int_distribution`](https://en.cppreference.com/w/cpp/numeric/random/uniform_int_distribution)
 
 Usage:
@@ -130,6 +131,7 @@ struct ToPi {
 using my_lim_genf = lim_unif_real_mtgenf_type<double, FromE, ToPi>;
 // now you can pass this as a type to SortBench
 ```
+Both of the last two classes use [`std::uniform_real_distribution`](https://en.cppreference.com/w/cpp/numeric/random/uniform_real_distribution)
 
 ## Benchmark
 `SortBench` is a class that helps in testing sorting functions, full declaration:
