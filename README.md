@@ -44,10 +44,10 @@ You could use it like this:
 SeededPRNG<int, some_prng, 624> sprng {};
 std::cout << "Generated value: " << sprng() << std::endl;
 ```
-Doesn't matter what type of elements generates `PRNG_T` object, this PRNG turns them to `T`. Under the hood it is implemented with `std::random_device`(for seed generating) and `std::memcpy` for type conversion.
+Doesn't matter what type of elements generates `PRNG_T` object, this PRNG turns them to `T`. Under the hood it is implemented with [`std::random_device`](https://en.cppreference.com/w/cpp/numeric/random/random_device)(for seed generating) and [`std::memcpy`](https://en.cppreference.com/w/cpp/string/byte/memcpy) for type conversion.
 
 * `Genfunctor_base<InT, OutT, SeededPRNG_T>` - template class for generating values of type `OutT` with help of seeded generator of type `SeededPRNG_T` that generates values of type `InT`.
-  * `InT` and `OuT` should be of numeric types (real or integral).
+  * `InT` and `OutT` should be of numeric types (real or integral).
   * `SeededPRNG_T` must meet the requirements of [`RandomNumberEngine`](https://en.cppreference.com/w/cpp/named_req/RandomNumberEngine). For classes that use heap, or mask their actual size(with pointers, for example) write your own manual generator, using this one.
 Class meets the requirements of [`RandomNumberEngine`](https://en.cppreference.com/w/cpp/named_req/RandomNumberEngine)).
 
@@ -73,21 +73,21 @@ This are classes, but the most useful for end user will be type aliases for this
 ### Type aliases
 First of all, all of this aliases are based on [mt19937 generator](https://en.wikipedia.org/wiki/Mersenne_Twister) and uniform [continuous](https://en.wikipedia.org/wiki/Uniform_distribution_(continuous)) or [discrete](https://en.wikipedia.org/wiki/Discrete_uniform_distribution) distribution.
 
-* `SeededMT` - mt19937 ready for generation of type `uint32_t`, seeded with std::random_device
+* `SeededMT` - mt19937 ready for generation of type `uint32_t`, seeded with [`std::random_device`](https://en.cppreference.com/w/cpp/numeric/random/random_device)
 * `GenFunctor<InT, OutT, PRNG_T, size_t seedlen>` - template class for creating own genfuncs
   * `InT` - type of seed values and generating of `PRNG_T` object.
   * `OutT` - type, values of which are about to be generated.
   * `PRNG_T` - type of generator, should have a constructor, that accepts two iterators of seed `[begin, end]` range.
   * `size_t seed_length` - length of seed iterable (nontype parameter).
 
-* `unlimited_mtgenf<OutT>` - mt19937 ready for generation of values, of type OutT
-  * OutT - should be numeric (real or integral), for nonnumeric values - turn on your imagination(it is easier than you think).
+* `unlimited_mtgenf<OutT>` - `mt19937` ready for generation of values, of type `OutT`
+  * `OutT` - should be numeric (real or integral), for nonnumeric values - turn on your imagination(it is easier than you think).
 
 * `lim_unif_int_mtgenf<IntT, IntT from, IntTo>` - spell as *limited, uniform distribution, integral, mersenne twister of seed length 19937 bits, generating function*
   * `IntT` - type, values of which are about to be generated, should be integral (e.g `short int`, `long long`).
   * `IntT from` - value that shows the beginning of the interval.
   * `IntT to` - value that shows the ending of the interval.
-Class uses `std::uniform_distribution`.
+Class uses [`std::uniform_int_distribution`](https://en.cppreference.com/w/cpp/numeric/random/uniform_int_distribution)
 
 Usage:
 ```c++
@@ -98,7 +98,7 @@ std::cout << gen() << std::endl; // 3, 4, 5 or 6 ?
 
 * `lim_unif_real_mtgenf<RealT>` - limited generating function of real types
   * `IntT` - type, values of which are about to be generated, should be real (e.g `double`, `float`).
-It's constructor accepts `RealT from` and `RealT to` - range of values to be generated. Looking in long perspective, you'll want to make this constructor take zero arguments, so that you could pass this class to SortBench as a template template parameter. But due to c++ limitations(see `LimGenFunctorVal` above) we can't do this. So my recomendation is that you have two options, first is:
+It's constructor accepts `RealT from` and `RealT to` - range of values to be generated. Looking in long perspective, you'll want to make this constructor take zero arguments, so that you could pass this class to `SortBench` as a template template parameter. But due to c++ limitations(see `LimGenFunctorVal` above) we can't do this. So my recomendation is that you have two options, first is:
 ```c++
 class my_real_limited_e_pi : public lim_unif_real_mtgenf<double>
 {
@@ -124,7 +124,7 @@ struct FromE {
 };
 
 struct ToPi {
-  constexpr static double value {3.141};
+	constexpr static double value {3.141};
 };
 
 using my_lim_genf = lim_unif_real_mtgenf_type<double, FromE, ToPi>;
@@ -174,8 +174,9 @@ print_container(std::cout, srt.sorted_arrays());
 std::cout << std::endl;
 }
 ```
-
-Now that we've seen basic example, let's light the details. There are such helper classes/aliases:
+For print_container function see [this](https://gist.github.com/B1Z0N/e122def9e42e2ee198519bb70642feda).
+Now that we've seen basic example, let's light the details. 
+There are such helper classes/aliases:
 * `CmpAsgn` - assembles comparisons and assignments in one structure.
    * `size_t cmp`  - comparisons.
    * `size_t asgn` - assignments.
@@ -187,8 +188,27 @@ using SortStats = std::vector<std::tuple<
                   CmpAsgn                     // comparisons and assignments
                   >>;
 ```
+And here is the code, potentially useful for you:
+```c++
+std::ostream& ssoutput(std::ostream& os, const srtbch::SortStats& ss)
+{
+		// code for the output of the data
+		// returned from SortBench::operator() call
+		using namespace std::chrono;
 
-Main method of `SortBench` is `operator(...)`, it has to versions:
+		for (auto &[sz, tm, ca] : ss)
+		{
+				os << "size: " << sz << '.';
+				os << " time: " << (tm).count() << "ns.";
+				os << " comparisons: " << ca.cmp << '.';
+				os << " assignments: " << ca.asgn << '.' << std::endl;
+		}
+
+		return os;
+}
+```
+
+Main method of `SortBench` is `operator(...)`, it has two versions:
 * `SortStats operator()(std::vector<size_t> array_sizes)`, where `array_sizes` is array of sizes to be generated and tested
 * `SortStats operator()(size_t array_size, size_t measure_num)`, where:
    * `array_size` - size of every array being generated
