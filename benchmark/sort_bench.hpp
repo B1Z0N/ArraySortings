@@ -1,4 +1,6 @@
-// classes for benchmarking different sorting methods
+/** @file
+ *  classes for benchmarking different sorting methods
+ */
 
 #ifndef SORT_BENCH
 #define SORT_BENCH
@@ -139,6 +141,7 @@ SortBench<T, SortFunctor, GenFunc>::sorted_arrays()
 }
 
 
+/** clear previous data */
 template <
     typename T,
     template <typename> typename SortFunctor,
@@ -147,12 +150,13 @@ template <
 void 
 SortBench<T, SortFunctor, GenFunc>::clear_data()
 {
-	stats.clear();			// clear
-	sorted_arrs.clear();	// previous
-	notsorted_arrs.clear();	// data
+	stats.clear();
+	sorted_arrs.clear();
+	notsorted_arrs.clear();
 }
 
 
+/** do time and (comparsons and assignments) testings*/
 template <
     typename T,
     template <typename> typename SortFunctor,
@@ -160,7 +164,6 @@ template <
     >
 void 
 SortBench<T, SortFunctor, GenFunc>::measure(size_t size)
-// do time and (comparsons and assignments) testings
 {
 
 	std::vector<T> tvec (size);										// time vector

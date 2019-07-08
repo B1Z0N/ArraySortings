@@ -1,4 +1,6 @@
-// template class for comparisons and assignments counting
+/** @file 
+template class for comparisons and assignments counting
+*/
 
 #ifndef AOS_LAB2_ARRAY_ELEMENT
 #define AOS_LAB2_ARRAY_ELEMENT

@@ -14,7 +14,7 @@ struct BubbleSort
 		for (uint i = 0; i < len - 1; i++)
 			for (uint j = 0; j < len - i - 1; j++)
 				if (arr[j] > arr[j + 1])
-					std::swap(arr[j], arr[j + 1])
+					std::swap(arr[j], arr[j + 1]);
 	}
 };
 
@@ -116,10 +116,14 @@ void test_sort(size_t array_size, size_t measure_num)
 
 	auto res {srt(array_size, measure_num)};
 	standard_ssoutput(res);
+
 	std::cout << "Generated containers is: \n";
-	print_container(std::cout, srt.notsorted_arrays());
+	auto nsort {srt.notsorted_arrays()};
+	print_container(std::cout, nsort);
+
+	auto sort {srt.sorted_arrays()};
 	std::cout << "And sorted containers is: \n";
-	print_container(std::cout, srt.sorted_arrays());
+	print_container(std::cout, sort);
 	std::cout << std::endl;
 }
 
@@ -130,27 +134,27 @@ void test_sort_ints()
 	// test_sort<int, BubbleSort>(100, 3);
 }
 
-struct From	{
-	constexpr static double value = 3.45;
-};
+// struct From	{
+// 	constexpr static double value = 3.45;
+// };
 
-struct To   {
-	constexpr static double value = 5.942;
-};
+// struct To   {
+// 	constexpr static double value = 5.942;
+// };
 
 
-void test_sort_doubles()
-{
+// void test_sort_doubles()
+// {
 
-	test_sort<double, BubbleSort,
-	          srtbch::lim_unif_real_mtgenf_type<double, From, To>>(4, 3);
+// 	test_sort<double, BubbleSort,
+// 	          srtbch::lim_unif_real_mtgenf_type<double, From, To>>(4, 3);
 
-	// test_sort<int, BubbleSort>(25, 3);
-	// test_sort<int, BubbleSort>(100, 3);
-}
+// 	// test_sort<int, BubbleSort>(25, 3);
+// 	// test_sort<int, BubbleSort>(100, 3);
+// }
 
 int main()
 {
 	test_sort_ints();
-	test_sort_doubles();
+	// test_sort_doubles();
 }

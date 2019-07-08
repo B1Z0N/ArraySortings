@@ -1,4 +1,6 @@
-// template class for comparisons and assignments counting
+/** @file 
+template class declaration for comparisons and assignments counting
+*/
 
 #ifndef ARRAY_ELEMENT_INTERFACE
 #define ARRAY_ELEMENT_INTERFACE
@@ -10,17 +12,18 @@ namespace srtbch
 
 using size_t = unsigned long;
 
+/** class for comparison and assignment counting */
+
 template <typename T>
 class ArrayElement
-// class for comparison and assignment counting
 {
     T elem {};
 
-    static size_t comparisons; // 0 by default
-    static size_t assignments; // 0 by default
+    static size_t comparisons; ///< 0 by default
+    static size_t assignments; ///< 0 by default
 
-    static bool cmp_on;  // true by default
-    static bool asgn_on; // true by default
+    static bool cmp_on;  ///< true by default
+    static bool asgn_on; ///< true by default
 public:
     ArrayElement() = default;
     ArrayElement(const T &);

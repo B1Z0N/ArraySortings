@@ -1,3 +1,7 @@
+/** @file
+ *  interface to benchmarking facilites
+ */
+
 #ifndef SORT_BENCH_INTERFACE
 #define SORT_BENCH_INTERFACE
 
@@ -21,20 +25,25 @@ struct CmpAsgn
 };
 
 
+/** convenience alias for result of work of SortBench::operator() */
 using SortStats = std::vector<std::tuple<
                   size_t,                     // array length
                   std::chrono::nanoseconds,   // sorting duration
                   CmpAsgn                     // comparisons and assignments
                   >>;
 
-
+/** main class that measures sorting time and amount of
+ *  comparisons and assignments of this sorting, depeneds on this template arguments:\n
+ *  T - type of elements in array\n
+ *  SortFunctor - class template, that has operator(T *arr, size_t size) method\n
+ *  GenFunc - template parameter, that has operator() generating values of type T,
+ *  default value is srtbch::unlimited_mtgenf<T> 
+ */
 template <
     typename T,
     template <typename> typename SortFunctor,
     typename GenFunc = unlimited_mtgenf<T>
     >
-// look forward to thread safety
-// look forward to array + - and so on operations on ArrayElement, for sortings like RadixSort
 class SortBench
 {
     SortStats stats;
