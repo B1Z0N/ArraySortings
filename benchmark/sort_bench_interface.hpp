@@ -53,8 +53,8 @@ class SortBench
 public:
     SortBench(bool keep_before = false, bool keep_after = false);
 
-    void keep_before(bool should = false); 
-    void keep_after (bool should = false); 
+    void keep_before(bool should = true); 
+    void keep_after (bool should = true); 
 
     SortStats operator()(std::vector<size_t> array_sizes);
     SortStats operator()(size_t array_size, size_t measure_num);

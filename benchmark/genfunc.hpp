@@ -76,6 +76,7 @@ template <
     typename OutT,
     typename SeededPRNG_T
     >
+class GenFunctor_base
 // class for generating values of type OutT with help of seeded
 // generator of type SeededPRNG_T thata generates values of type InT
 
@@ -85,7 +86,6 @@ template <
 // for classes that use heap, or mask their actual size(with pointers, for example)
 // write your own manual generator, using this one
 // class meets the requirements of RandomNumberEngine(named requirement)
-class GenFunctor_basic
 {
     static constexpr size_t outsz   {sizeof(OutT)};
     static constexpr size_t insz    {sizeof(InT)};
@@ -155,6 +155,29 @@ template <
     typename T,
     typename DistribT,
     typename GeneratorT,
+    T from,
+    T to
+    >
+class LimGenFunctorVal : LimGenFunctor_base<T, DistribT, GeneratorT>
+// class for generating limited values of different types
+// in range [from, to]
+// with help of:
+// T - type being generated
+// DistribT - distribution of generation, that meets the requirements
+// of RandomNumberDistribution(named requirement)
+// GeneratorT - generator, that meets the requirements
+// of RandomNumberEngine(named requirement)
+{
+    using parent = LimGenFunctor_base<T, DistribT, GeneratorT>;
+public:
+    LimGenFunctorVal() : parent{from , to} {}
+};
+
+
+template <
+    typename T,
+    typename DistribT,
+    typename GeneratorT,
     typename From,
     typename To
     >
@@ -176,29 +199,6 @@ public:
     LimGenFunctorType()
     // construct distribution
         : parent{From::value, To::value} {}
-};
-
-
-template <
-    typename T,
-    typename DistribT,
-    typename GeneratorT,
-    T from,
-    T to
-    >
-// class for generating limited values of different types
-// in range [from, to]
-// with help of:
-// T - type being generated
-// DistribT - distribution of generation, that meets the requirements
-// of RandomNumberDistribution(named requirement)
-// GeneratorT - generator, that meets the requirements
-// of RandomNumberEngine(named requirement)
-class LimGenFunctorVal : LimGenFunctor_base<T, DistribT, GeneratorT>
-{
-    using parent = LimGenFunctor_base<T, DistribT, GeneratorT>;
-public:
-    LimGenFunctorVal() : parent{from , to} {}
 };
 
 
@@ -259,12 +259,12 @@ static constexpr size_t mt19937_seed_length {624};
 using SeededMT = SeededPRNG<uint32_t, __MT19937Seeder, mt19937_seed_length>;
 // mt19937 ready for generation, seeded with std::random_device
 
-template <typename InT, typename OutT, typename PRNG, size_t seedlen>
-using GenFunctor = GenFunctor_basic<InT, OutT, SeededPRNG<InT, PRNG, seedlen>>;
+template <typename InT, typename OutT, typename PRNG_T, size_t seedlen>
+using GenFunctor = GenFunctor_base<InT, OutT, SeededPRNG<InT, PRNG_T, seedlen>>;
 // template class for creating own generators
 
 template <typename OutT>
-using unlimited_mtgenf = GenFunctor_basic<uint32_t, OutT, SeededMT>;
+using unlimited_mtgenf = GenFunctor_base<uint32_t, OutT, SeededMT>;
 // mt19937 ready for generation of values, of type OutT
 // OutT - should be numeric (real or integral)
 

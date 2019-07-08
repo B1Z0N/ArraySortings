@@ -14,12 +14,7 @@ struct BubbleSort
 		for (uint i = 0; i < len - 1; i++)
 			for (uint j = 0; j < len - i - 1; j++)
 				if (arr[j] > arr[j + 1])
-				{
-					T temp = arr[j + 1];
-					arr[j + 1] = arr[j];
-					arr[j] = temp;
-				}
-
+					std::swap(arr[j], arr[j + 1])
 	}
 };
 
