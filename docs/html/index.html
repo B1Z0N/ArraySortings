@@ -63,8 +63,11 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><p>Repository with sorting methods and benchmarking facilities.</p>
+<p><a href="https://b1z0n.github.io/SortingBenchmark/"><b>Documentation</b></a></p>
 <h1>Compilation</h1>
-<p>Use <code>g++ some.cpp -o some -std=c++17</code>. Other compilers not guaranteed to work. </p><h1>Features</h1>
+<p>Use <code>g++ some.cpp -o some -std=c++17</code>.</p>
+<p>Other compilers not guaranteed to work.</p>
+<p>Include <code><a class="el" href="sort__bench_8hpp.html">benchmark/sort_bench.hpp</a></code>. </p><h1>Features</h1>
 <p>All of this, you could find in namespace <code>srtbch</code> (spell as SortBench) </p><h2>ArrayElement</h2>
 <p>Is a template class that helps with counting of comparisons and assignments operation. Designed to count this values automatically. For example: </p><div class="fragment"><div class="line">{c++}</div><div class="line">std::array&lt;ArrayElement&lt;int&gt;, 10&gt; arr{};</div><div class="line">std::generate(std::begin(arr), std::end(arr), some_gen_func);</div><div class="line"></div><div class="line">some_sort_func(arr.data(), arr.size());</div><div class="line"></div><div class="line">std::cout &lt;&lt; &quot;Comparisons: &quot; &lt;&lt; ArrayElement&lt;int&gt;::get_cmp()  &lt;&lt; std::endl;</div><div class="line">std::cout &lt;&lt; &quot;Assignments: &quot; &lt;&lt; ArrayElement&lt;int&gt;::get_asgn() &lt;&lt; std::endl;</div><div class="line"></div><div class="line">ArrayElement&lt;int&gt;::reset();</div><div class="line">// start counting from zero</div></div><!-- fragment --><p> You could manually diasble/enable some of the counting facilites: </p><div class="fragment"><div class="line">{c++}</div><div class="line">ArrayElement&lt;int&gt;::off_on_cmp_count(true)   </div><div class="line">// means turn on comparison counting</div><div class="line"></div><div class="line">ArrayElement&lt;int&gt;::off_on_asgn_count(false) </div><div class="line">// means turn off assignment counting</div></div><!-- fragment --><p> Comparison and assignment operator support included. Looking forward to include some other operators for behaving much like T class itself. It will be usefull for testing some extraordinary sortings like radix sort. But that's ignored till this sortings being implemented(see "**Note about future**"). </p><h2>Element generation functions</h2>
 <p>Remember: <b>PRNG stands for "pseudorandom number generator"</b> Remember: <b>Call <code>operator()</code> for generation</b></p>
