@@ -19,7 +19,7 @@ std::cout << "Assignments: " << ArrayElement<int>::get_asgn() << std::endl;
 ArrayElement<int>::reset();
 // start counting from zero
 ```
-You could manually diasble/enable some of the counting fascilites:
+You could manually diasble/enable some of the counting facilites:
 ```c++
 ArrayElement<int>::off_on_cmp_count(true)   
 // means turn on comparison counting
