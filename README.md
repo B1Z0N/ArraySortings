@@ -1,7 +1,9 @@
 
 
 # ArraySortings
-Repository with sorting methods and benchmarking facilities.
+Repository with sorting methods and benchmarking facilities. 
+
+[**Documentation**](https://b1z0n.github.io/SortingBenchmark/)
 
 # Compilation
 Use `g++ some.cpp -o some -std=c++17`.
