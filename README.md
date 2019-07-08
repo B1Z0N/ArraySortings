@@ -2,6 +2,10 @@
 
 # ArraySortings
 Repository with sorting methods and benchmarking facilities.
+
+# Compilation
+Use `g++ some.cpp -o some -std=c++17`.
+Other compilers not guaranteed to work.
 # Features
 All of this, you could find in namespace `srtbch` (spell as SortBench)
 ## ArrayElement
