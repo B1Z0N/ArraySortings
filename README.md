@@ -131,7 +131,7 @@ struct ToPi {
 using my_lim_genf = lim_unif_real_mtgenf_type<double, FromE, ToPi>;
 // now you can pass this as a type to SortBench
 ```
-Both of the last two classes use [`std::uniform_real_distribution`](https://en.cppreference.com/w/cpp/numeric/random/uniform_real_distribution)
+Both of the `lim_unif_real_mtgenf<RealT>` and `lim_unif_real_mtgenf_type<RealT, From, To>` use [`std::uniform_real_distribution`](https://en.cppreference.com/w/cpp/numeric/random/uniform_real_distribution)
 
 ## Benchmark
 `SortBench` is a class that helps in testing sorting functions, full declaration:
