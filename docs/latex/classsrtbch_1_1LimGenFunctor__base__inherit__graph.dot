@@ -1,0 +1,11 @@
+digraph "srtbch::LimGenFunctor_base&lt; T, DistribT, GeneratorT &gt;"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node0 [label="srtbch::LimGenFunctor\l_base\< T, DistribT, GeneratorT \>",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node0 -> Node1 [dir="back",color="midnightblue",fontsize="10",style="solid"];
+  Node1 [label="srtbch::LimGenFunctorType\l\< T, DistribT, GeneratorT \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classsrtbch_1_1LimGenFunctorType.html"];
+  Node0 -> Node2 [dir="back",color="firebrick4",fontsize="10",style="solid"];
+  Node2 [label="srtbch::LimGenFunctorVal\l\< T, DistribT, GeneratorT \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classsrtbch_1_1LimGenFunctorVal.html"];
+}

@@ -1,0 +1,45 @@
+\hypertarget{classsrtbch_1_1SortBench}{}\section{srtbch\+:\+:Sort\+Bench$<$ T, Sort\+Functor, Gen\+Func $>$ Class Template Reference}
+\label{classsrtbch_1_1SortBench}\index{srtbch\+::\+Sort\+Bench$<$ T, Sort\+Functor, Gen\+Func $>$@{srtbch\+::\+Sort\+Bench$<$ T, Sort\+Functor, Gen\+Func $>$}}
+
+
+{\ttfamily \#include $<$sort\+\_\+bench\+\_\+interface.\+hpp$>$}
+
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classsrtbch_1_1SortBench_a52d335ca84bd9c41710c23a1f4f5a407}\label{classsrtbch_1_1SortBench_a52d335ca84bd9c41710c23a1f4f5a407}} 
+{\bfseries Sort\+Bench} (bool keep\+\_\+before=false, bool keep\+\_\+after=false)
+\item 
+\mbox{\Hypertarget{classsrtbch_1_1SortBench_a72c37a7e77d565ece01089ca1dbd0ac0}\label{classsrtbch_1_1SortBench_a72c37a7e77d565ece01089ca1dbd0ac0}} 
+void {\bfseries keep\+\_\+before} (bool should=true)
+\item 
+\mbox{\Hypertarget{classsrtbch_1_1SortBench_af8f3d176e19a6c778eb9fedfeeeb8092}\label{classsrtbch_1_1SortBench_af8f3d176e19a6c778eb9fedfeeeb8092}} 
+void {\bfseries keep\+\_\+after} (bool should=true)
+\item 
+\mbox{\Hypertarget{classsrtbch_1_1SortBench_a61a23df22267642e0b8b43547afeb9ed}\label{classsrtbch_1_1SortBench_a61a23df22267642e0b8b43547afeb9ed}} 
+\hyperlink{sort__bench__interface_8hpp_afdb9897e91624a7b1e59809d240c3553}{Sort\+Stats} {\bfseries operator()} (std\+::vector$<$ size\+\_\+t $>$ array\+\_\+sizes)
+\item 
+\mbox{\Hypertarget{classsrtbch_1_1SortBench_afa9ce928f5da5a8e9ffcedb563cff884}\label{classsrtbch_1_1SortBench_afa9ce928f5da5a8e9ffcedb563cff884}} 
+\hyperlink{sort__bench__interface_8hpp_afdb9897e91624a7b1e59809d240c3553}{Sort\+Stats} {\bfseries operator()} (size\+\_\+t array\+\_\+size, size\+\_\+t measure\+\_\+num)
+\item 
+\mbox{\Hypertarget{classsrtbch_1_1SortBench_a2c6df3b76eaa3dade395a893a388b272}\label{classsrtbch_1_1SortBench_a2c6df3b76eaa3dade395a893a388b272}} 
+std\+::vector$<$ std\+::vector$<$ T $>$ $>$ {\bfseries notsorted\+\_\+arrays} ()
+\item 
+\mbox{\Hypertarget{classsrtbch_1_1SortBench_abfd1290cc1fe9e19bb40c38cb8c08df2}\label{classsrtbch_1_1SortBench_abfd1290cc1fe9e19bb40c38cb8c08df2}} 
+std\+::vector$<$ std\+::vector$<$ T $>$ $>$ {\bfseries sorted\+\_\+arrays} ()
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+\subsubsection*{template$<$typename T, template$<$ typename $>$ typename Sort\+Functor, typename Gen\+Func = unlimited\+\_\+mtgenf$<$\+T$>$$>$\newline
+class srtbch\+::\+Sort\+Bench$<$ T, Sort\+Functor, Gen\+Func $>$}
+
+main class that measures sorting time and amount of comparisons and assignments of this sorting, depeneds on this template arguments\+:~\newline
+T -\/ type of elements in array~\newline
+Sort\+Functor -\/ class template, that has operator(\+T $\ast$arr, size\+\_\+t size) method~\newline
+Gen\+Func -\/ template parameter, that has operator() generating values of type T, default value is srtbch\+::unlimited\+\_\+mtgenf$<$\+T$>$ 
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+/home/b1zon/\+Desktop/cpp/\+Sorting\+Benchmark/benchmark/\hyperlink{sort__bench__interface_8hpp}{sort\+\_\+bench\+\_\+interface.\+hpp}\item 
+/home/b1zon/\+Desktop/cpp/\+Sorting\+Benchmark/benchmark/\hyperlink{sort__bench_8hpp}{sort\+\_\+bench.\+hpp}\end{DoxyCompactItemize}

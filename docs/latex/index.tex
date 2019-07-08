@@ -1,0 +1,267 @@
+Repository with sorting methods and benchmarking facilities.
+
+\section*{Compilation}
+
+Use {\ttfamily g++ some.\+cpp -\/o some -\/std=c++17}. Other compilers not guaranteed to work. \section*{Features}
+
+All of this, you could find in namespace {\ttfamily srtbch} (spell as Sort\+Bench) \subsection*{Array\+Element}
+
+Is a template class that helps with counting of comparisons and assignments operation. Designed to count this values automatically. For example\+: 
+\begin{DoxyCode}
+\{c++\}
+std::array<ArrayElement<int>, 10> arr\{\};
+std::generate(std::begin(arr), std::end(arr), some\_gen\_func);
+
+some\_sort\_func(arr.data(), arr.size());
+
+std::cout << "Comparisons: " << ArrayElement<int>::get\_cmp()  << std::endl;
+std::cout << "Assignments: " << ArrayElement<int>::get\_asgn() << std::endl;
+
+ArrayElement<int>::reset();
+// start counting from zero
+\end{DoxyCode}
+ You could manually diasble/enable some of the counting facilites\+: 
+\begin{DoxyCode}
+\{c++\}
+ArrayElement<int>::off\_on\_cmp\_count(true)   
+// means turn on comparison counting
+
+ArrayElement<int>::off\_on\_asgn\_count(false) 
+// means turn off assignment counting
+\end{DoxyCode}
+ Comparison and assignment operator support included. Looking forward to include some other operators for behaving much like T class itself. It will be usefull for testing some extraordinary sortings like radix sort. But that\textquotesingle{}s ignored till this sortings being implemented(see \char`\"{}$\ast$$\ast$\+Note about future$\ast$$\ast$\char`\"{}). \subsection*{Element generation functions}
+
+Remember\+: {\bfseries P\+R\+NG stands for \char`\"{}pseudorandom number generator\char`\"{}} Remember\+: {\bfseries Call {\ttfamily operator()} for generation}
+
+There are several classes that provides this feature(generation)\+: \subsubsection*{Classes}
+
+
+\begin{DoxyItemize}
+\item {\ttfamily Seeded\+P\+R\+NG$<$T, P\+R\+N\+G\+\_\+T, size\+\_\+t seed\+\_\+len$>$} template class that generates seed values for P\+R\+NG.
+\begin{DoxyItemize}
+\item {\ttfamily T} -\/ type for generating.
+\item {\ttfamily P\+R\+N\+G\+\_\+T} -\/ type of generator, should have a constructor, that accepts two iterators of seed {\ttfamily \mbox{[}begin, end\mbox{]}} range.
+\item {\ttfamily size\+\_\+t seed\+\_\+length} -\/ length of seed iterable (nontype parameter). {\ttfamily Seede\+P\+R\+NG} meets the requirements of \href{https://en.cppreference.com/w/cpp/named_req/RandomNumberEngine}{\tt {\ttfamily Random\+Number\+Engine}}). You could use it like this\+: 
+\begin{DoxyCode}
+\{c++\}
+SeededPRNG<int, some\_prng, 624> sprng \{\};
+std::cout << "Generated value: " << sprng() << std::endl;
+\end{DoxyCode}
+ Doesn\textquotesingle{}t matter what type of elements generates {\ttfamily P\+R\+N\+G\+\_\+T} object, this P\+R\+NG turns them to {\ttfamily T}. Under the hood it is implemented with \href{https://en.cppreference.com/w/cpp/numeric/random/random_device}{\tt {\ttfamily std\+::random\+\_\+device}}(for seed generating) and \href{https://en.cppreference.com/w/cpp/string/byte/memcpy}{\tt {\ttfamily std\+::memcpy}} for type conversion.
+\end{DoxyItemize}
+\item {\ttfamily Genfunctor\+\_\+base$<$InT, OutT, Seeded\+P\+R\+N\+G\+\_\+T$>$} -\/ template class for generating values of type {\ttfamily OutT} with help of seeded generator of type {\ttfamily Seeded\+P\+R\+N\+G\+\_\+T} that generates values of type {\ttfamily InT}.
+\begin{DoxyItemize}
+\item {\ttfamily InT} and {\ttfamily OutT} should be of numeric types (real or integral).
+\item {\ttfamily Seeded\+P\+R\+N\+G\+\_\+T} must meet the requirements of \href{https://en.cppreference.com/w/cpp/named_req/RandomNumberEngine}{\tt {\ttfamily Random\+Number\+Engine}}. For classes that use heap, or mask their actual size(with pointers, for example) write your own manual generator, using this one. Class meets the requirements of \href{https://en.cppreference.com/w/cpp/named_req/RandomNumberEngine}{\tt {\ttfamily Random\+Number\+Engine}}).
+\end{DoxyItemize}
+\item {\ttfamily Lim\+Gen\+Functor\+\_\+base$<$T, DistribT, GeneratorT$>$} -\/ class for generating limited values of different types with help of\+:
+\begin{DoxyItemize}
+\item {\ttfamily T} -\/ type being generated.
+\item {\ttfamily DistribT} -\/ distribution of generation, that meets the requirements of \href{https://en.cppreference.com/w/cpp/named_req/RandomNumberDistribution}{\tt {\ttfamily Random\+Number\+Distribution}}.
+\item {\ttfamily GeneratorT} -\/ generator, that meets the requirements of \href{https://en.cppreference.com/w/cpp/named_req/RandomNumberEngine}{\tt {\ttfamily Random\+Number\+Engine}}). It is the base class, that sets interface to other classes. Constructor accepts values {\ttfamily const T\& from} and {\ttfamily const T\& to} that limit a range of generated values {\ttfamily \mbox{[}from, to\mbox{]}}.
+\end{DoxyItemize}
+\item {\ttfamily Lim\+Gen\+Functor\+Val$<$T, DistribT, GeneratorT, T from, T to$>$} -\/ doing the same thing as {\ttfamily Lim\+Gen\+Functor\+\_\+base$<$T, DistribT, GeneratorT$>$}, except of nontype parameters {\ttfamily from} and {\ttfamily to}, both of type {\ttfamily T}\+:
+\begin{DoxyItemize}
+\item {\ttfamily T from} -\/ value that shows the beginning of the interval.
+\item {\ttfamily T to} -\/ value that shows the ending of the interval. Constructor accepts no parameters. Call {\ttfamily operator()} for generation. Values of some types couldn\textquotesingle{}t be passed as nontype template parameter, double for example(precision problems) couldn\textquotesingle{}t(according to C++17 standard(oh, i hope they will, i hope they will)). But this is an important strategical point -\/ {\bfseries sort variables of real types}. So the next class is a workaround to this problem.
+\end{DoxyItemize}
+\item {\ttfamily Lim\+Gen\+Functor\+Type$<$T, DistribT, GeneratorT, From, To$>$} -\/ doing the same thing as {\ttfamily Lim\+Gen\+Functor\+\_\+base$<$T, DistribT, GeneratorT$>$}, except of type parameters {\ttfamily From} and {\ttfamily To}\+:
+\begin{DoxyItemize}
+\item {\ttfamily From} -\/ type that has {\ttfamily constexpr static} member of type {\ttfamily T} named {\ttfamily value}, that shows the beginning of the interval.
+\item {\ttfamily To} -\/ type that has {\ttfamily constexpr static} member of type {\ttfamily T} named {\ttfamily value}, that shows the ending of the interval. Constructor accepts no parameters.
+\end{DoxyItemize}
+\end{DoxyItemize}
+
+This are classes, but the most useful for end user will be type aliases for this classes\+: \subsubsection*{Type aliases}
+
+First of all, all of this aliases are based on \href{https://en.wikipedia.org/wiki/Mersenne_Twister}{\tt mt19937 generator} and uniform \href{https://en.wikipedia.org/wiki/Uniform_distribution_(continuous)}{\tt continuous} or \href{https://en.wikipedia.org/wiki/Discrete_uniform_distribution}{\tt discrete} distribution.
+
+
+\begin{DoxyItemize}
+\item {\ttfamily Seeded\+MT} -\/ mt19937 ready for generation of type {\ttfamily uint32\+\_\+t}, seeded with \href{https://en.cppreference.com/w/cpp/numeric/random/random_device}{\tt {\ttfamily std\+::random\+\_\+device}}
+\item {\ttfamily Gen\+Functor$<$InT, OutT, P\+R\+N\+G\+\_\+T, size\+\_\+t seedlen$>$} -\/ template class for creating own genfuncs
+\begin{DoxyItemize}
+\item {\ttfamily InT} -\/ type of seed values and generating of {\ttfamily P\+R\+N\+G\+\_\+T} object.
+\item {\ttfamily OutT} -\/ type, values of which are about to be generated.
+\item {\ttfamily P\+R\+N\+G\+\_\+T} -\/ type of generator, should have a constructor, that accepts two iterators of seed {\ttfamily \mbox{[}begin, end\mbox{]}} range.
+\item {\ttfamily size\+\_\+t seed\+\_\+length} -\/ length of seed iterable (nontype parameter).
+\end{DoxyItemize}
+\item {\ttfamily unlimited\+\_\+mtgenf$<$OutT$>$} -\/ {\ttfamily mt19937} ready for generation of values, of type {\ttfamily OutT}
+\begin{DoxyItemize}
+\item {\ttfamily OutT} -\/ should be numeric (real or integral), for nonnumeric values -\/ turn on your imagination(it is easier than you think).
+\end{DoxyItemize}
+\item {\ttfamily lim\+\_\+unif\+\_\+int\+\_\+mtgenf$<$IntT, IntT from, Int\+To$>$} -\/ spell as {\itshape limited, uniform distribution, integral, mersenne twister of seed length 19937 bits, generating function}
+\begin{DoxyItemize}
+\item {\ttfamily IntT} -\/ type, values of which are about to be generated, should be integral (e.\+g {\ttfamily short int}, {\ttfamily long long}).
+\item {\ttfamily IntT from} -\/ value that shows the beginning of the interval.
+\item {\ttfamily IntT to} -\/ value that shows the ending of the interval.
+\end{DoxyItemize}
+\end{DoxyItemize}
+
+Class uses \href{https://en.cppreference.com/w/cpp/numeric/random/uniform_int_distribution}{\tt {\ttfamily std\+::uniform\+\_\+int\+\_\+distribution}}
+
+Usage\+: 
+\begin{DoxyCode}
+\{c++\}
+lim\_unif\_int\_mtgenf<int, 3, 6> gen \{\};
+
+std::cout << gen() << std::endl; // 3, 4, 5 or 6 ?
+\end{DoxyCode}
+
+
+
+\begin{DoxyItemize}
+\item {\ttfamily lim\+\_\+unif\+\_\+real\+\_\+mtgenf$<$RealT$>$} -\/ limited generating function of real types
+\begin{DoxyItemize}
+\item {\ttfamily IntT} -\/ type, values of which are about to be generated, should be real (e.\+g {\ttfamily double}, {\ttfamily float}). It\textquotesingle{}s constructor accepts {\ttfamily RealT from} and {\ttfamily RealT to} -\/ range of values to be generated. Looking in long perspective, you\textquotesingle{}ll want to make this constructor take zero arguments, so that you could pass this class to {\ttfamily Sort\+Bench} as a template template parameter. But due to c++ limitations(see {\ttfamily Lim\+Gen\+Functor\+Val} above) we can\textquotesingle{}t do this. So my recomendation is that you have two options, first is\+: 
+\begin{DoxyCode}
+\{c++\}
+class my\_real\_limited\_e\_pi : public lim\_unif\_real\_mtgenf<double>
+\{
+    using parent = lim\_unif\_real\_mtgenf<double>;
+public:
+    my\_real\_limited\_e\_pi()
+        : parent\{2.718, 3.141\} \{\}
+\};
+
+// now you can pass this as a type to SortBench
+\end{DoxyCode}
+ And the other option is the next item\+:
+\end{DoxyItemize}
+\item {\ttfamily lim\+\_\+unif\+\_\+real\+\_\+mtgenf\+\_\+type$<$RealT, From, To$>$} -\/ limited generating function of real types
+\begin{DoxyItemize}
+\item {\ttfamily From} -\/ type that has {\ttfamily constexpr static} member of type {\ttfamily T} named {\ttfamily value}, that shows the beginning of the interval.
+\item {\ttfamily To} -\/ type that has {\ttfamily constexpr static} member of type {\ttfamily T} named {\ttfamily value}, that shows the ending of the interval. Constructor accepts no parameters.
+\end{DoxyItemize}
+\end{DoxyItemize}
+
+Like that\+: 
+\begin{DoxyCode}
+\{c++\}
+struct FromE \{
+    constexpr static double value \{2.718\};
+\};
+
+struct ToPi \{
+    constexpr static double value \{3.141\};
+\};
+
+using my\_lim\_genf = lim\_unif\_real\_mtgenf\_type<double, FromE, ToPi>;
+// now you can pass this as a type to SortBench
+\end{DoxyCode}
+ Both of the {\ttfamily lim\+\_\+unif\+\_\+real\+\_\+mtgenf$<$RealT$>$} and {\ttfamily lim\+\_\+unif\+\_\+real\+\_\+mtgenf\+\_\+type$<$RealT, From, To$>$} use \href{https://en.cppreference.com/w/cpp/numeric/random/uniform_real_distribution}{\tt {\ttfamily std\+::uniform\+\_\+real\+\_\+distribution}}
+
+\subsection*{Benchmark}
+
+{\ttfamily Sort\+Bench} is a class that helps in testing sorting functions, full declaration\+: {\ttfamily template $<$typename T, template $<$typename$>$ typename Sort\+Functor, typename Gen\+Func = unlimited\+\_\+mtgenf$<$T$>$$>$}, where\+:
+\begin{DoxyItemize}
+\item {\ttfamily T} -\/ type to be generated and sorted.
+\item {\ttfamily Sort\+Functor} -\/ template that sorts arrays of type {\ttfamily T}, it should have {\ttfamily operator(\+T $\ast$ array, size\+\_\+t size)}.
+\item {\ttfamily Gen\+Func} -\/ class, that generates values of type {\ttfamily T}(for {\ttfamily unlimited\+\_\+mtgenf} and other interesting genfunctors look above).
+\end{DoxyItemize}
+
+Simple usecase\+: 
+\begin{DoxyCode}
+\{c++\}
+template <typename T>
+struct BubbleSort
+// functors only supported
+// due to c++ limitations
+\{
+      void operator()(T *arr, uint len) noexcept
+    // should have this method
+      \{
+          for (uint i = 0; i < len - 1; i++)
+              for (uint j = 0; j < len - i - 1; j++)
+                if (arr[j] > arr[j + 1])
+                    std::swap(arr[j], arr[j + 1])
+      \}
+\};
+
+SortBench<int, BubbleSort> srt;
+
+auto res \{srt(4 /*array\_size*/, 3 /*measure\_num*/)\};
+// 3 different arrays of size 4 being generated and tested
+
+output\_sort\_stats(res);
+// res of type SortStats
+
+std::cout << "Generated containers is: \(\backslash\)n";
+print\_container(std::cout, srt.notsorted\_arrays());
+// container of start(notsorted) arrays
+
+std::cout << "And sorted containers is: \(\backslash\)n";
+print\_container(std::cout, srt.sorted\_arrays());
+// container of end(sorted) arrays
+
+std::cout << std::endl;
+\}
+\end{DoxyCode}
+ For print\+\_\+container function see \href{https://gist.github.com/B1Z0N/e122def9e42e2ee198519bb70642feda}{\tt this}. Now that we\textquotesingle{}ve seen basic example, let\textquotesingle{}s light the details. There are such helper classes/aliases\+:
+\begin{DoxyItemize}
+\item {\ttfamily Cmp\+Asgn} -\/ assembles comparisons and assignments in one structure.
+\begin{DoxyItemize}
+\item {\ttfamily size\+\_\+t cmp} -\/ comparisons.
+\item {\ttfamily size\+\_\+t asgn} -\/ assignments.
+\end{DoxyItemize}
+\item {\ttfamily Sort\+Stats} -\/ declared as follows\+: 
+\begin{DoxyCode}
+\{c++\}
+using SortStats = std::vector<std::tuple<
+                  size\_t,                     // array length
+                  std::chrono::nanoseconds,   // sorting duration
+                  CmpAsgn                     // comparisons and assignments
+                  >>;
+\end{DoxyCode}
+ And here is the code, potentially useful for you\+: 
+\begin{DoxyCode}
+\{c++\}
+std::ostream& ssoutput(std::ostream& os, const srtbch::SortStats& ss)
+\{
+        // code for the output of the data
+        // returned from SortBench::operator() call
+        using namespace std::chrono;
+
+        for (auto &[sz, tm, ca] : ss)
+        \{
+                os << "size: " << sz << '.';
+                os << " time: " << (tm).count() << "ns.";
+                os << " comparisons: " << ca.cmp << '.';
+                os << " assignments: " << ca.asgn << '.' << std::endl;
+        \}
+
+        return os;
+\}
+\end{DoxyCode}
+
+\end{DoxyItemize}
+
+Main method of {\ttfamily Sort\+Bench} is {\ttfamily operator(...)}, it has two versions\+:
+\begin{DoxyItemize}
+\item {\ttfamily Sort\+Stats operator()(std\+::vector$<$size\+\_\+t$>$ array\+\_\+sizes)}, where {\ttfamily array\+\_\+sizes} is array of sizes to be generated and tested
+\item {\ttfamily Sort\+Stats operator()(size\+\_\+t array\+\_\+size, size\+\_\+t measure\+\_\+num)}, where\+:
+\begin{DoxyItemize}
+\item {\ttfamily array\+\_\+size} -\/ size of every array being generated
+\item {\ttfamily measure\+\_\+num} -\/ number of generations of arrays of size {\ttfamily array\+\_\+size}
+\end{DoxyItemize}
+\end{DoxyItemize}
+
+Also if you want to keep start or end arrays you should state this explicitly with one of this methods\+:
+\begin{DoxyItemize}
+\item {\ttfamily void keep\+\_\+before(bool should = true)} to keep start arrays
+\item {\ttfamily void keep\+\_\+after (bool should = true)} to keep end arrays
+\item or via constructor\+: {\ttfamily Sort\+Bench(bool keep\+\_\+before = false, bool keep\+\_\+after = false)}
+\end{DoxyItemize}
+
+To access it, you should use appropriate methods\+:
+\begin{DoxyItemize}
+\item {\ttfamily std\+::vector$<$std\+::vector$<$T$>$$>$ notsorted\+\_\+arrays()}
+\item {\ttfamily std\+::vector$<$std\+::vector$<$T$>$$>$ sorted\+\_\+arrays()} \subsection*{Note about future}
+\end{DoxyItemize}
+
+
+\begin{DoxyEnumerate}
+\item Planning to implement the very basic sortings.
+\item Documentation site.
+\item Implement concepts, or template type assertions. 
+\end{DoxyEnumerate}

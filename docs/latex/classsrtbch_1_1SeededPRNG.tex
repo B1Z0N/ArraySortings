@@ -1,0 +1,61 @@
+\hypertarget{classsrtbch_1_1SeededPRNG}{}\section{srtbch\+:\+:Seeded\+P\+R\+NG$<$ T, P\+R\+N\+G\+\_\+T, seed\+\_\+length $>$ Class Template Reference}
+\label{classsrtbch_1_1SeededPRNG}\index{srtbch\+::\+Seeded\+P\+R\+N\+G$<$ T, P\+R\+N\+G\+\_\+\+T, seed\+\_\+length $>$@{srtbch\+::\+Seeded\+P\+R\+N\+G$<$ T, P\+R\+N\+G\+\_\+\+T, seed\+\_\+length $>$}}
+
+
+{\ttfamily \#include $<$genfunc.\+hpp$>$}
+
+\subsection*{Public Types}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classsrtbch_1_1SeededPRNG_a95682bcc5829b93c2b8e211ec0eeefd1}\label{classsrtbch_1_1SeededPRNG_a95682bcc5829b93c2b8e211ec0eeefd1}} 
+using {\bfseries result\+\_\+type} = T
+\end{DoxyCompactItemize}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classsrtbch_1_1SeededPRNG_a90b8d33ec1999c0f922d52a15226128e}\label{classsrtbch_1_1SeededPRNG_a90b8d33ec1999c0f922d52a15226128e}} 
+T {\bfseries min} ()
+\item 
+\mbox{\Hypertarget{classsrtbch_1_1SeededPRNG_a67d2ae5d5435bd719a351f56f633c2ba}\label{classsrtbch_1_1SeededPRNG_a67d2ae5d5435bd719a351f56f633c2ba}} 
+T {\bfseries max} ()
+\item 
+\hyperlink{classsrtbch_1_1SeededPRNG_ade7faf721a3b9d817886f3ed7eb263af}{Seeded\+P\+R\+NG} ()
+\item 
+T \hyperlink{classsrtbch_1_1SeededPRNG_aea9b901a9dc7ad6a7fe328ff291c72c1}{operator()} ()
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+\subsubsection*{template$<$typename T, typename P\+R\+N\+G\+\_\+T, size\+\_\+t seed\+\_\+length$>$\newline
+class srtbch\+::\+Seeded\+P\+R\+N\+G$<$ T, P\+R\+N\+G\+\_\+\+T, seed\+\_\+length $>$}
+
+class that generates seed values for P\+R\+NG~\newline
+T -\/ type for generating~\newline
+P\+R\+N\+G\+\_\+T -\/ type of generator should have a constructor~\newline
+that accepts two iterators of seed iterable~\newline
+seed\+\_\+length -\/ length of seed iterable~\newline
+class meets the requirements of Random\+Number\+Engine(named requirement) 
+
+\subsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classsrtbch_1_1SeededPRNG_ade7faf721a3b9d817886f3ed7eb263af}\label{classsrtbch_1_1SeededPRNG_ade7faf721a3b9d817886f3ed7eb263af}} 
+\index{srtbch\+::\+Seeded\+P\+R\+NG@{srtbch\+::\+Seeded\+P\+R\+NG}!Seeded\+P\+R\+NG@{Seeded\+P\+R\+NG}}
+\index{Seeded\+P\+R\+NG@{Seeded\+P\+R\+NG}!srtbch\+::\+Seeded\+P\+R\+NG@{srtbch\+::\+Seeded\+P\+R\+NG}}
+\subsubsection{\texorpdfstring{Seeded\+P\+R\+N\+G()}{SeededPRNG()}}
+{\footnotesize\ttfamily template$<$typename T , typename P\+R\+N\+G\+\_\+T , size\+\_\+t seed\+\_\+length$>$ \\
+\hyperlink{classsrtbch_1_1SeededPRNG}{srtbch\+::\+Seeded\+P\+R\+NG}$<$ T, P\+R\+N\+G\+\_\+T, seed\+\_\+length $>$\+::\hyperlink{classsrtbch_1_1SeededPRNG}{Seeded\+P\+R\+NG} (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+constructor, seeds our P\+R\+N\+G\+\_\+T object with values of appropriate type 
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{classsrtbch_1_1SeededPRNG_aea9b901a9dc7ad6a7fe328ff291c72c1}\label{classsrtbch_1_1SeededPRNG_aea9b901a9dc7ad6a7fe328ff291c72c1}} 
+\index{srtbch\+::\+Seeded\+P\+R\+NG@{srtbch\+::\+Seeded\+P\+R\+NG}!operator()@{operator()}}
+\index{operator()@{operator()}!srtbch\+::\+Seeded\+P\+R\+NG@{srtbch\+::\+Seeded\+P\+R\+NG}}
+\subsubsection{\texorpdfstring{operator()()}{operator()()}}
+{\footnotesize\ttfamily template$<$typename T , typename P\+R\+N\+G\+\_\+T , size\+\_\+t seed\+\_\+length$>$ \\
+T \hyperlink{classsrtbch_1_1SeededPRNG}{srtbch\+::\+Seeded\+P\+R\+NG}$<$ T, P\+R\+N\+G\+\_\+T, seed\+\_\+length $>$\+::operator() (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+call for generating values 
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+/home/b1zon/\+Desktop/cpp/\+Sorting\+Benchmark/benchmark/\hyperlink{genfunc_8hpp}{genfunc.\+hpp}\end{DoxyCompactItemize}
