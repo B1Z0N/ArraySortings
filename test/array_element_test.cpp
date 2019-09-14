@@ -96,6 +96,7 @@ static auto random_compare{[](const auto& fst, const auto& snd) {
       return fst != snd;
     }
   }
+  return fst > snd;  // workaround to disable warnings about noreturn
 }};
 
 TEST_CASE_METHOD(ResetFixture, "Basic Single ArrayElement Comparison",
