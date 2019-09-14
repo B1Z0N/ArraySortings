@@ -15,7 +15,7 @@ using size_t = unsigned long;
 
 template <typename T>
 class ArrayElement {
-  T elem{};
+  T elem_{};
 
   static size_t comparisons;  ///< 0 by default
   static size_t assignments;  ///< 0 by default
@@ -63,15 +63,15 @@ template <typename T>
 bool ArrayElement<T>::asgn_on = true;
 
 template <typename T>
-ArrayElement<T>::ArrayElement(const T &el) : elem{el} {}
+ArrayElement<T>::ArrayElement(const T &el) : elem_{el} {}
 
 template <typename T>
-ArrayElement<T>::ArrayElement(T &&el) : elem{std::move(el)} {}
+ArrayElement<T>::ArrayElement(T &&el) : elem_{std::move(el)} {}
 
 template <typename T>
 ArrayElement<T> &ArrayElement<T>::operator=(const ArrayElement<T> &el) {
   if (asgn_on) assignments++;
-  elem = el.elem;
+  elem_ = el.elem_;
 
   return (*this);
 }
@@ -79,7 +79,7 @@ ArrayElement<T> &ArrayElement<T>::operator=(const ArrayElement<T> &el) {
 template <typename T>
 ArrayElement<T> &ArrayElement<T>::operator=(const T &el) {
   if (asgn_on) assignments++;
-  elem = el;
+  elem_ = el;
 
   return (*this);
 }
@@ -87,7 +87,7 @@ ArrayElement<T> &ArrayElement<T>::operator=(const T &el) {
 template <typename T>
 ArrayElement<T> &ArrayElement<T>::operator=(ArrayElement<T> &&el) {
   if (asgn_on) assignments++;
-  elem = std::move(el.elem);
+  elem_ = std::move(el.elem_);
 
   return (*this);
 }
@@ -95,7 +95,7 @@ ArrayElement<T> &ArrayElement<T>::operator=(ArrayElement<T> &&el) {
 template <typename T>
 ArrayElement<T> &ArrayElement<T>::operator=(T &&el) {
   if (asgn_on) assignments++;
-  elem = std::move(el);
+  elem_ = std::move(el);
 
   return (*this);
 }
@@ -129,35 +129,39 @@ inline void ArrayElement<T>::off_on_asgn_count(bool b) noexcept {
 template <typename T>
 inline bool ArrayElement<T>::operator==(const ArrayElement<T> &other) {
   if (cmp_on) comparisons++;
-  return elem == other.elem;
+  return elem_ == other.elem_;
 }
 
 template <typename T>
 inline bool ArrayElement<T>::operator!=(const ArrayElement<T> &other) {
-  return !(*this == other);
+  if (cmp_on) comparisons++;
+  return elem_ != other.elem_;
 }
 
 template <typename T>
 inline bool ArrayElement<T>::operator>(const ArrayElement<T> &other) {
   if (cmp_on) comparisons++;
-  return elem > other.elem;
+  return elem_ > other.elem_;
 }
 
 template <typename T>
 inline bool ArrayElement<T>::operator<(const ArrayElement<T> &other) {
-  return !(*this == other) && !(*this > other);
+  if (cmp_on) comparisons++;
+  return elem_ < other.elem_;
 }
 
 template <typename T>
 inline bool ArrayElement<T>::operator>=(const ArrayElement<T> &other) {
-  return !(*this < other);
+  if (cmp_on) comparisons++;
+  return elem_ >= other.elem_;
 }
 
 template <typename T>
 inline bool ArrayElement<T>::operator<=(const ArrayElement<T> &other) {
-  return !(*this > other);
+  if (cmp_on) comparisons++;
+  return elem_ <= other.elem_;
 }
 
-};  // namespace srtbch
+}  // namespace srtbch
 
 #endif  // ARRAY_ELEMENT_HPP
