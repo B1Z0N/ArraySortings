@@ -39,8 +39,8 @@ class ArrayElement {
   static size_t get_cmp() noexcept;
   static size_t get_asgn() noexcept;
 
-  static void off_on_cmp_count(bool) noexcept;
-  static void off_on_asgn_count(bool) noexcept;
+  static void cmp_count_switch(bool) noexcept;
+  static void asgn_count_switch(bool) noexcept;
 
   bool operator==(const ArrayElement &other);
   bool operator!=(const ArrayElement &other);
@@ -117,12 +117,12 @@ inline size_t ArrayElement<T>::get_asgn() noexcept {
 }
 
 template <typename T>
-inline void ArrayElement<T>::off_on_cmp_count(bool b) noexcept {
+inline void ArrayElement<T>::cmp_count_switch(bool b) noexcept {
   cmp_on = b;
 }
 
 template <typename T>
-inline void ArrayElement<T>::off_on_asgn_count(bool b) noexcept {
+inline void ArrayElement<T>::asgn_count_switch(bool b) noexcept {
   asgn_on = b;
 }
 
