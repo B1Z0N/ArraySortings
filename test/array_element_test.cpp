@@ -8,17 +8,13 @@
 using namespace srtbch;
 
 struct ResetFixture {
-  ResetFixture() {
-    ArrayElement<int>::reset();
-  }
+  ResetFixture() { ArrayElement<int>::reset(); }
   ArrayElement<int> ae1;
 };
-
 
 ////////////////////////////////////////////////////////////
 // Assignments tests
 ////////////////////////////////////////////////////////////
-
 
 TEST_CASE_METHOD(ResetFixture, "Basic Single ArrayElement Assignment",
                  "[basic assignment][single array element]") {
@@ -71,15 +67,13 @@ TEST_CASE_METHOD(
   REQUIRE(ArrayElement<int>::get_asgn() == 2 * num);
 }
 
-
 ////////////////////////////////////////////////////////////
 // Comparisons tests
 ////////////////////////////////////////////////////////////
 
-
 static auto random_compare{[](const auto& fst, const auto& snd) {
   static std::mt19937 mt{std::random_device{}()};
-  static std::uniform_int_distribution dis {1, 6};
+  static std::uniform_int_distribution dis{1, 6};
   unsigned int choice = dis(mt);
 
   switch (choice) {
@@ -131,9 +125,9 @@ TEST_CASE_METHOD(ResetFixture,
   REQUIRE(ArrayElement<int>::get_cmp() == num);
 }
 
-TEST_CASE_METHOD(
-    ResetFixture, "Random Increment Multiple ArrayElement`s Comparison",
-    "[random increment][multiple array elemens]") {
+TEST_CASE_METHOD(ResetFixture,
+                 "Random Increment Multiple ArrayElement`s Comparison",
+                 "[random increment][multiple array elemens]") {
   // this test will be ran 5 times with random
   // maximal number of runs, from 1 to 1e5
   std::size_t num = GENERATE(take(5, random(1, static_cast<int>(1e5))));
@@ -147,11 +141,9 @@ TEST_CASE_METHOD(
   REQUIRE(ArrayElement<int>::get_cmp() == 2 * num);
 }
 
-
 ////////////////////////////////////////////////////////////
 // Reset tests
 ////////////////////////////////////////////////////////////
-
 
 TEST_CASE_METHOD(ResetFixture, "Assignments N Comparisons Reset", "[reset]") {
   ae1 = 3;
@@ -169,9 +161,30 @@ TEST_CASE_METHOD(ResetFixture, "Assignments N Comparisons Reset", "[reset]") {
   REQUIRE(ArrayElement<int>::get_cmp() == 0);
 }
 
-
 ////////////////////////////////////////////////////////////
-// Reset tests
+// Turn off/on count tests
 ////////////////////////////////////////////////////////////
 
+TEST_CASE_METHOD(ResetFixture, "Comparisons Count Switch",
+                 "[comparisons][switch]") {
+  ae1 > 3;
+  REQUIRE(ArrayElement<int>::get_cmp() == 1);
+  ArrayElement<int>::cmp_count_switch(false);
+  ae1 > 3;
+  REQUIRE(ArrayElement<int>::get_cmp() == 1);
+  ArrayElement<int>::cmp_count_switch(true);
+  ae1 > 3;
+  REQUIRE(ArrayElement<int>::get_cmp() == 2);
+}
 
+TEST_CASE_METHOD(ResetFixture, "Assignments Count Switch",
+                 "[assignment][switch]") {
+  ae1 = 3;
+  REQUIRE(ArrayElement<int>::get_asgn() == 1);
+  ArrayElement<int>::asgn_count_switch(false);
+  ae1 = 3;
+  REQUIRE(ArrayElement<int>::get_asgn() == 1);
+  ArrayElement<int>::asgn_count_switch(true);
+  ae1 = 3;
+  REQUIRE(ArrayElement<int>::get_asgn() == 2);
+}
