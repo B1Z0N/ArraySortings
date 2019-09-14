@@ -168,3 +168,10 @@ TEST_CASE_METHOD(ResetFixture, "Assignments N Comparisons Reset", "[reset]") {
   REQUIRE(ArrayElement<int>::get_asgn() == 0);
   REQUIRE(ArrayElement<int>::get_cmp() == 0);
 }
+
+
+////////////////////////////////////////////////////////////
+// Reset tests
+////////////////////////////////////////////////////////////
+
+

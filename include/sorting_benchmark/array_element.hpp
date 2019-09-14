@@ -9,25 +9,23 @@ template class declaration for comparisons and assignments counting
 
 namespace srtbch {
 
-using size_t = unsigned long;
-
 /** class for comparison and assignment counting */
 
 template <typename T>
 class ArrayElement {
   T elem_{};
 
-  static size_t comparisons;  ///< 0 by default
-  static size_t assignments;  ///< 0 by default
+  static std::size_t comparisons;  ///< 0 by default
+  static std::size_t assignments;  ///< 0 by default
 
   static bool cmp_on;   ///< true by default
   static bool asgn_on;  ///< true by default
  public:
   ArrayElement() = default;
-  ArrayElement(const T &);
   ArrayElement(const ArrayElement &) = default;
-  ArrayElement(T &&);
   ArrayElement(ArrayElement &&) = default;
+  ArrayElement(T &&);
+  ArrayElement(const T &);
 
   ArrayElement &operator=(const ArrayElement &);
   ArrayElement &operator=(const T &);
@@ -36,8 +34,8 @@ class ArrayElement {
 
   static void reset() noexcept;
 
-  static size_t get_cmp() noexcept;
-  static size_t get_asgn() noexcept;
+  static std::size_t get_cmp() noexcept;
+  static std::size_t get_asgn() noexcept;
 
   static void cmp_count_switch(bool) noexcept;
   static void asgn_count_switch(bool) noexcept;
@@ -51,10 +49,10 @@ class ArrayElement {
 };
 
 template <typename T>
-size_t ArrayElement<T>::comparisons = 0;
+std::size_t ArrayElement<T>::comparisons = 0;
 
 template <typename T>
-size_t ArrayElement<T>::assignments = 0;
+std::size_t ArrayElement<T>::assignments = 0;
 
 template <typename T>
 bool ArrayElement<T>::cmp_on = true;
@@ -107,12 +105,12 @@ inline void ArrayElement<T>::reset() noexcept {
 }
 
 template <typename T>
-inline size_t ArrayElement<T>::get_cmp() noexcept {
+inline std::size_t ArrayElement<T>::get_cmp() noexcept {
   return comparisons;
 }
 
 template <typename T>
-inline size_t ArrayElement<T>::get_asgn() noexcept {
+inline std::size_t ArrayElement<T>::get_asgn() noexcept {
   return assignments;
 }
 
