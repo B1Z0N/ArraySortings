@@ -9,11 +9,9 @@
 using namespace srtbch;
 using namespace sortings;
 
-#include <iostream>
-
 TEST_CASE("Sort Array", "[sort]") {
 
-  SortBench<int, InsertionSort, Generator> bench{true, true};
+  SortBench<int, BubbleSort, Generator> bench{true, true};
   std::size_t size = GENERATE(3, 10, 50, 100, 1000, 1000);
   std::size_t measure_num = GENERATE(1, 5, 10);
 

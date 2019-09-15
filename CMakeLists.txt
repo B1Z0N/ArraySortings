@@ -11,6 +11,7 @@ set(TEST_SOURCES
   test/array_element_test.cpp
   test/utility_test.cpp
   test/sorting_benchmark_test.cpp
+  test/sortings_test.cpp
   test/main.cpp
   )
 
