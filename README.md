@@ -1,14 +1,70 @@
-
-
 # SortingBenchmark
+
 Repository with sorting methods and benchmarking facilities.
 
-# Compilation
-Use `g++ some.cpp -o some -std=c++17`.
+# Installation and testing
 
-Other compilers not guaranteed to work.
+It is one header project, so just include appropriate file in folder named `bench.hpp` in `inculde/sorting_benchmark/` directory.
 
-Include `benchmark/sort_bench.hpp`.
+To run the tests(assuming you are in the root repository directory):
+```bash
+mkdir build  # or mybuild
+cd build
+cmake ..
+make
+./test_runner
+```
+
+# Using in your project
+
+From previous step you can find static library generated in `build` directory. File named `libsrtbch.a` is a static library. So you should link this to your cpp-program and also add an include path which is in `include/sorting_benchmark/` folder in the project's root. 
+
+## Manually
+
+```c++
+// use.cpp
+
+#include "sorting_benchmark/bench.hpp"
+
+using namespace srtbch;
+
+int main() {
+  SortBench<int, sortings::BubbleSort, Generator> bench;
+  bench(3, 2); // generate array of length 3 and measure it 2 times
+  for (const auto& vec : bench.sorted()) {
+    for (const auto& x : vec) {
+      std::cout << v << ", ";
+    }
+    std::cout << '\n';
+  }
+}
+```
+
+And compile-link-run it like this(gcc example):
+
+```bash
+> g++ use.cpp -I"${PROJECT_DIR}/inculde" ${PROJECT_DIR}/build/libsrtbch.a -o use
+> ./use
+> ... "some two arrays of length three" ...
+```
+
+Where `${PROJECT_DIR}` is a path to this project's directory.
+
+## CMake
+
+Add this lines to your `CMakeLists.txt`:
+
+```cmake
+include_directories(${NOTACONV_PROJECT_DIR}/include)
+link_directories(${NOTACONV_PROJECT_DIR}/build)
+...
+...
+...
+target_link_libraries(executable srtbch)
+```
+
+Where `${NOTACONV_PROJECT_DIR}` is a path to this project's directory, and `executable` is your target specified in `add_executable(executable ${SOURCES})` function call.
+
 # Features
 Main things, you could find in namespace `srtbch` (spell as SortBench).
 
