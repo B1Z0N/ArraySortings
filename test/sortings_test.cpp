@@ -81,39 +81,3 @@ TEST_CASE("Heap Sorting Array", "[sort]") {
     REQUIRE(std::is_sorted(std::begin(arr), std::end(arr)) == true);
   }
 }
-
-// TEST_CASE("Counting Sorting Array", "[sort]") {
-//   SortBench<int, CountingSort, Generator> bench{true, true};
-//   std::size_t size = GENERATE(3, 10, 50, 100, 1000, 1000);
-//   std::size_t measure_num = GENERATE(1, 5, 10);
-
-//   bench(size, measure_num);
-
-//   for (auto arr : bench.sorted_arrays()) {
-//     REQUIRE(std::is_sorted(std::begin(arr), std::end(arr)) == true);
-//   }
-// }
-
-// TEST_CASE("Radix Sorting Array", "[sort]") {
-//   SortBench<int, RadixSort, Generator> bench{true, true};
-//   std::size_t size = GENERATE(3, 10, 50, 100, 1000, 1000);
-//   std::size_t measure_num = GENERATE(1, 5, 10);
-
-//   bench(size, measure_num);
-
-//   for (auto arr : bench.sorted_arrays()) {
-//     REQUIRE(std::is_sorted(std::begin(arr), std::end(arr)) == true);
-//   }
-// }
-
-// TEST_CASE("Bucket Sorting Array", "[sort]") {
-//   SortBench<int, BucketSort, Generator> bench{true, true};
-//   std::size_t size = GENERATE(3, 10, 50, 100, 1000, 1000);
-//   std::size_t measure_num = GENERATE(1, 5, 10);
-
-//   bench(size, measure_num);
-
-//   for (auto arr : bench.sorted_arrays()) {
-//     REQUIRE(std::is_sorted(std::begin(arr), std::end(arr)) == true);
-//   }
-// }
