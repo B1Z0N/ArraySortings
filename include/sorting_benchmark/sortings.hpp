@@ -10,7 +10,7 @@ namespace sortings {
 
 template <typename T>
 struct SelectionSort {
-  void operator()(T* data, std::size_t size) {
+  void operator()(T* data, std::size_t size) const {
     std::size_t i, j, min_idx;
 
     for (i = 0; i < size - 1; i++) {
@@ -25,7 +25,7 @@ struct SelectionSort {
 
 template <typename T>
 struct BubbleSort {
-  void operator()(T* data, std::size_t size) {
+  void operator()(T* data, std::size_t size) const {
     std::size_t i, j;
     for (i = 0; i < size - 1; i++)
       for (j = 0; j < size - i - 1; j++)
@@ -35,7 +35,7 @@ struct BubbleSort {
 
 template <typename T>
 struct InsertionSort {
-  void operator()(T* data, std::size_t size) {
+  void operator()(T* data, std::size_t size) const {
     int i, j, isize = size;
     T* key;
 
@@ -54,12 +54,12 @@ struct InsertionSort {
 
 template <typename T>
 struct MergeSort {
-  void operator()(T* data, std::size_t size) {
+  void operator()(T* data, std::size_t size) const {
     return merge_sort(data, 0, size - 1);
   }
 
  private:
-  void merge(T* data, std::size_t l, std::size_t m, std::size_t r) {
+  void merge(T* data, std::size_t l, std::size_t m, std::size_t r) const {
     std::size_t i, j, k;
     std::size_t n1 = m - l + 1;
     std::size_t n2 = r - m;
@@ -100,7 +100,7 @@ struct MergeSort {
     delete[] R;
   }
 
-  void merge_sort(T* data, std::size_t l, std::size_t r) {
+  void merge_sort(T* data, std::size_t l, std::size_t r) const {
     if (r - l == 0) return;
 
     if (l < r) {
@@ -116,11 +116,11 @@ struct MergeSort {
 
 template <typename T>
 struct QuickSort {
-  void operator()(T* data, std::size_t size) {
+  void operator()(T* data, std::size_t size) const {
     return quick_sort(data, 0, size - 1);
   }
 
-  int partition(T* data, int low, int high) {
+  int partition(T* data, int low, int high) const {
     T& pivot = data[high];
     int i = (low - 1);
 
@@ -135,7 +135,7 @@ struct QuickSort {
     return (i + 1);
   }
 
-  void quick_sort(T* data, int low, int high) {
+  void quick_sort(T* data, int low, int high) const {
     if (low < high) {
       int pi = partition(data, low, high);
 
@@ -147,10 +147,12 @@ struct QuickSort {
 
 template <typename T>
 struct HeapSort {
-  void operator()(T* data, std::size_t size) { return heap_sort(data, size); }
+  void operator()(T* data, std::size_t size) const {
+    return heap_sort(data, size);
+  }
 
  private:
-  void heapify(T* data, std::size_t size, std::size_t i) {
+  void heapify(T* data, std::size_t size, std::size_t i) const {
     std::size_t largest = i;
     std::size_t l = 2 * i + 1;
     std::size_t r = 2 * i + 2;
@@ -165,7 +167,7 @@ struct HeapSort {
     }
   }
 
-  void heap_sort(T* data, std::size_t size) {
+  void heap_sort(T* data, std::size_t size) const {
     for (int i = size / 2 - 1; i >= 0; --i) heapify(data, size, i);
 
     for (int i = size - 1; i >= 0; --i) {
@@ -177,17 +179,17 @@ struct HeapSort {
 
 template <typename T>
 struct CountingSort {
-  void operator()(T* data, std::size_t size) {}
+  void operator()(T* data, std::size_t size) const {}
 };
 
 template <typename T>
 struct RadixSort {
-  void operator()(T* data, std::size_t size) {}
+  void operator()(T* data, std::size_t size) const {}
 };
 
 template <typename T>
 struct BucketSort {
-  void operator()(T* data, std::size_t size) {}
+  void operator()(T* data, std::size_t size) const {}
 };
 
 }  // namespace sortings
