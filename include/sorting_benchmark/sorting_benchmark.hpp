@@ -18,13 +18,13 @@
 namespace srtbch {
 
 struct CmpAsgn {
-  size_t cmp;
-  size_t asgn;
+  std::size_t cmp;
+  std::size_t asgn;
 };
 
 /** convenience alias for result of work of SortBench::operator() */
 using SortStats =
-    std::vector<std::tuple<size_t,                    // array length
+    std::vector<std::tuple<std::size_t,                    // array length
                            std::chrono::nanoseconds,  // sorting duration
                            CmpAsgn  // comparisons and assignments
                            >>;
@@ -32,7 +32,7 @@ using SortStats =
 /** main class that measures sorting time and amount of
  *  comparisons and assignments of this sorting, depeneds on this template
  * arguments:\n T - type of elements in array\n SortFunctor - class template,
- * that has operator(T *arr, size_t size) method\n GenFunc - template parameter,
+ * that has operator(T *arr, std::size_t size) method\n GenFunc - template parameter,
  * that has operator() generating values of type T
  */
 template <typename T, template <typename> typename SortFunctor,
@@ -58,8 +58,8 @@ class SortBench {
   void keep_before(bool should = true);
   void keep_after(bool should = true);
 
-  SortStats operator()(std::vector<size_t> array_sizes);
-  SortStats operator()(size_t array_size, size_t measure_num);
+  SortStats operator()(std::vector<std::size_t> array_sizes);
+  SortStats operator()(std::size_t array_size, std::size_t measure_num);
 
   std::vector<std::vector<T>> notsorted_arrays();
   std::vector<std::vector<T>> sorted_arrays();
@@ -67,9 +67,9 @@ class SortBench {
  private:
   void clear_data();
 
-  void measure(size_t sz);
+  void measure(std::size_t sz);
 
-  std::pair<size_t, size_t> test_single_cmp_asgn(std::vector<ArrayElement<T>>&);
+  std::pair<std::size_t, std::size_t> test_single_cmp_asgn(std::vector<ArrayElement<T>>&);
   std::chrono::nanoseconds test_single_time(std::vector<T>&);
 };
 
@@ -98,7 +98,7 @@ void SortBench<T, SortFunctor, GenFunc>::keep_after(
 template <typename T, template <typename> typename SortFunctor,
           typename GenFunc>
 SortStats SortBench<T, SortFunctor, GenFunc>::operator()(
-    std::vector<size_t> arrays_sizes) {
+    std::vector<std::size_t> arrays_sizes) {
   clear_data();
   for (auto size : arrays_sizes) {
     measure(size);
@@ -109,8 +109,8 @@ SortStats SortBench<T, SortFunctor, GenFunc>::operator()(
 
 template <typename T, template <typename> typename SortFunctor,
           typename GenFunc>
-SortStats SortBench<T, SortFunctor, GenFunc>::operator()(size_t array_size,
-                                                         size_t msr_num) {
+SortStats SortBench<T, SortFunctor, GenFunc>::operator()(std::size_t array_size,
+                                                         std::size_t msr_num) {
   clear_data();
   while (msr_num--) {
     measure(array_size);
@@ -165,7 +165,7 @@ void SortBench<T, SortFunctor, GenFunc>::clear_data() {
 /** do time and (comparsons and assignments) testings*/
 template <typename T, template <typename> typename SortFunctor,
           typename GenFunc>
-void SortBench<T, SortFunctor, GenFunc>::measure(size_t size) {
+void SortBench<T, SortFunctor, GenFunc>::measure(std::size_t size) {
   std::vector<T> tvec(size);  // time vector
   std::generate(std::begin(tvec), std::end(tvec), std::ref(gen));
 
@@ -200,7 +200,7 @@ void SortBench<T, SortFunctor, GenFunc>::measure(size_t size) {
 
 template <typename T, template <typename> typename SortFunctor,
           typename GenFunc>
-std::pair<size_t, size_t>
+std::pair<std::size_t, std::size_t>
 SortBench<T, SortFunctor, GenFunc>::test_single_cmp_asgn(
     std::vector<ArrayElement<T>>& vec) {
   cmp_asgn_sort(vec.data(), vec.size());
