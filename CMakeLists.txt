@@ -16,3 +16,10 @@ set(TEST_SOURCES
   )
 
 add_executable(test_runner ${TEST_SOURCES})
+
+# generate static library from the sources
+add_library(srtbch STATIC "src/main.cpp")
+
+# set the location for library installation -- current folder in this case
+# not really necessary in this example. Use "sudo make install" to apply
+install(TARGETS srtbch DESTINATION .)
