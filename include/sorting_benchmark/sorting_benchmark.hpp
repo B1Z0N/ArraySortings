@@ -1,5 +1,5 @@
 /** @file
- *  interface to benchmarking facilites
+ *  main class to benchmarking facilites
  */
 
 #ifndef SORT_BENCH_HPP
@@ -223,9 +223,9 @@ std::chrono::nanoseconds SortBench<T, SortFunctor, GenFunc>::test_single_time(
   time_sort(vec.data(), vec.size());
   steady_clock::time_point end{steady_clock::now()};
 
-  return nanoseconds(end - start);  // std::chrono:nanoseconds
+  return nanoseconds(end - start);
 }
 
-};  // namespace srtbch
+}  // namespace srtbch
 
 #endif  // SORT_BENCH_HPP

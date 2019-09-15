@@ -2,8 +2,8 @@
 template class declaration for comparisons and assignments counting
 */
 
-#ifndef ARRAY_ELEMENT_HPP
-#define ARRAY_ELEMENT_HPP
+#ifndef SORT_BENCH_ARRAY_ELEMENT_HPP
+#define SORT_BENCH_ARRAY_ELEMENT_HPP
 
 #include <utility>
 
@@ -162,4 +162,4 @@ inline bool ArrayElement<T>::operator<=(const ArrayElement<T> &other) const {
 
 }  // namespace srtbch
 
-#endif  // ARRAY_ELEMENT_HPP
+#endif  // SORT_BENCH_ARRAY_ELEMENT_HPP
