@@ -24,7 +24,7 @@ struct CmpAsgn {
 
 /** convenience alias for result of work of SortBench::operator() */
 using SortStats =
-    std::vector<std::tuple<std::size_t,                    // array length
+    std::vector<std::tuple<std::size_t,               // array length
                            std::chrono::nanoseconds,  // sorting duration
                            CmpAsgn  // comparisons and assignments
                            >>;
@@ -32,8 +32,8 @@ using SortStats =
 /** main class that measures sorting time and amount of
  *  comparisons and assignments of this sorting, depeneds on this template
  * arguments:\n T - type of elements in array\n SortFunctor - class template,
- * that has operator(T *arr, std::size_t size) method\n GenFunc - template parameter,
- * that has operator() generating values of type T
+ * that has operator(T *arr, std::size_t size) method\n GenFunc - template
+ * parameter, that has operator() generating values of type T
  */
 template <typename T, template <typename> typename SortFunctor,
           typename GenFunc>
@@ -58,7 +58,7 @@ class SortBench {
   void keep_before(bool should = true);
   void keep_after(bool should = true);
 
-  SortStats operator()(std::vector<std::size_t> array_sizes);
+  SortStats operator()(const std::vector<std::size_t>& array_sizes);
   SortStats operator()(std::size_t array_size, std::size_t measure_num);
 
   std::vector<std::vector<T>> notsorted_arrays();
@@ -69,7 +69,8 @@ class SortBench {
 
   void measure(std::size_t sz);
 
-  std::pair<std::size_t, std::size_t> test_single_cmp_asgn(std::vector<ArrayElement<T>>&);
+  std::pair<std::size_t, std::size_t> test_single_cmp_asgn(
+      std::vector<ArrayElement<T>>&);
   std::chrono::nanoseconds test_single_time(std::vector<T>&);
 };
 
@@ -98,7 +99,7 @@ void SortBench<T, SortFunctor, GenFunc>::keep_after(
 template <typename T, template <typename> typename SortFunctor,
           typename GenFunc>
 SortStats SortBench<T, SortFunctor, GenFunc>::operator()(
-    std::vector<std::size_t> arrays_sizes) {
+    const std::vector<std::size_t>& arrays_sizes) {
   clear_data();
   for (auto size : arrays_sizes) {
     measure(size);
@@ -123,7 +124,7 @@ template <typename T, template <typename> typename SortFunctor,
           typename GenFunc>
 std::vector<std::vector<T>>
 SortBench<T, SortFunctor, GenFunc>::notsorted_arrays() {
-  if (!is_inited) {
+  if (is_inited == false) {
     throw std::logic_error{
         "Uninitialized arrays, use operator() to fill it first"};
   }
