@@ -9,12 +9,12 @@ Repository with sorting methods and benchmarking facilities.
 - [Using in your project](#using-in-your-project)
   * [Manually](#manually)
   * [CMake](#cmake)
-- [Features](#features)
+  * [Features](#features)
   * [ArrayElement](#arrayelement)
-- [Utility](#utility)
+  * [Utility](#utility)
   * [Benchmark](#benchmark)
-- [Sortings](#sortings)
-  * [Note about future](#note-about-future)
+  * [Sortings](#sortings)
+- [Note about future](#note-about-future)
 
 
 # Installation and testing
