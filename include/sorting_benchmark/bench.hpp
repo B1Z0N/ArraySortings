@@ -4,3 +4,5 @@
 
 #include "array_element.hpp"
 #include "sorting_benchmark.hpp"
+#include "utility.hpp"
+#include "sortings.hpp"
