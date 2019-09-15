@@ -16,7 +16,7 @@ struct ResetFixture {
 // Assignments tests
 ////////////////////////////////////////////////////////////
 
-TEST_CASE_METHOD(ResetFixture, "Basic Single ArrayElement Assignment",
+TEST_CASE_METHOD(ResetFixture, "Basic Single ArrayElement Assignment", 
                  "[basic assignment][single array element]") {
   REQUIRE(ArrayElement<int>::get_asgn() == 0);
 }
