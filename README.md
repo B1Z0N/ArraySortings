@@ -110,7 +110,7 @@ ArrayElement<int>::off_on_asgn_count(false)
 ```
 Comparison and assignment operator support included. Looking forward to include some other operators for behaving much like T class itself. It will be usefull for testing some extraordinary sortings like radix sort. But that's ignored till this sortings being implemented(see "**Note about future**").
 
-# Utility
+## Utility
 
 This repo provides currently one function to generate pseudo-random numbers. It is `srtbch::Generator` and it generates only numbers of type `std::uint_fast32_t`(a.k.a `long unsigned int` on `gcc`). It was designed to be passed to `srtbch::SortBench`(see next item), but you could provide you implementation.
 
@@ -225,7 +225,7 @@ Also if you want to keep start or end arrays you should state this explicitly wi
 To access it, you should use appropriate methods:
 * `std::vector<std::vector<T>> notsorted_arrays()`
 * `std::vector<std::vector<T>> sorted_arrays()`
-# Sortings
+## Sortings
 
 Repo provides six common sorting algorithms for use with `SortBench`. Use this way:
 
