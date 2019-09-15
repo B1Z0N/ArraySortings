@@ -2,6 +2,21 @@
 
 Repository with sorting methods and benchmarking facilities.
 
+# Table of contents
+
+- [SortingBenchmark](#sortingbenchmark)
+- [Installation and testing](#installation-and-testing)
+- [Using in your project](#using-in-your-project)
+  * [Manually](#manually)
+  * [CMake](#cmake)
+- [Features](#features)
+  * [ArrayElement](#arrayelement)
+- [Utility](#utility)
+  * [Benchmark](#benchmark)
+- [Sortings](#sortings)
+  * [Note about future](#note-about-future)
+
+
 # Installation and testing
 
 It is one header project, so just include appropriate file in folder named `bench.hpp` in `inculde/sorting_benchmark/` directory.
